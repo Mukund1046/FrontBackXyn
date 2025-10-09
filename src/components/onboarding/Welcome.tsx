@@ -17,21 +17,38 @@ export const Welcome: React.FC = () => {
       icon: Brain,
       title: 'AI-Powered Assistant',
       description: 'Get personalized Medicare guidance with advanced AI',
+      background:
+        'https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/e1b4cb710eed4dcd88be55279ac937db',
+      titleWeight: 'font-medium',
+      descriptionLetterSpacing: '-0.4px',
+      borderRadiusClass: 'rounded-[12px]',
     },
     {
       icon: Shield,
       title: 'HIPAA Compliant',
       description: 'Your health data is secure and protected',
+      background:
+        'https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/1d2bc4b39af748ce828624f2ab58a04a',
+      titleWeight: 'font-medium',
+      borderRadiusClass: 'rounded-[11px]',
     },
     {
       icon: Heart,
       title: 'Health-Focused',
       description: 'Built specifically for Medicare beneficiaries',
+      background:
+        'https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/8da261c7aa1f4007a64399accda03ddd',
+      titleWeight: 'font-normal',
+      borderRadiusClass: 'rounded-[12px]',
     },
     {
       icon: Users,
       title: 'Expert Support',
       description: 'Access to healthcare professionals when needed',
+      background:
+        'https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/3e9c9deadfeb4ca4ac37b01d247e6ec8',
+      titleWeight: 'font-medium',
+      borderRadiusClass: 'rounded-[12px]',
     },
   ];
 
@@ -46,44 +63,41 @@ export const Welcome: React.FC = () => {
         <div className="grid grid-cols-2 gap-4">
           {features.map((feature, index) => {
             const Icon = feature.icon;
-            const isHighlight = index === 0;
+            const {
+              background,
+              titleWeight = 'font-medium',
+              descriptionLetterSpacing,
+              borderRadiusClass,
+            } = feature;
 
             return (
               <div
                 key={index}
-                className={clsx('text-center p-4', isHighlight && 'rounded-xl overflow-hidden')}
-                style={
-                  isHighlight
-                    ? {
-                        backgroundImage:
-                          'url(https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/8da261c7aa1f4007a64399accda03ddd)',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                      }
-                    : undefined
-                }
+                className={clsx('text-center p-4 overflow-hidden font-sans', borderRadiusClass)}
+                style={{
+                  backgroundImage: `url(${background})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  fontFamily: '__Inter_d65c78, sans-serif',
+                }}
               >
-                <div
-                  className={clsx(
-                    'mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg',
-                    !isHighlight && 'bg-blue-100'
-                  )}
-                >
-                  <Icon className={clsx(isHighlight ? 'h-10 w-10' : 'h-6 w-6', 'text-blue-600')} />
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg">
+                  <Icon className="h-10 w-10 text-blue-600" />
                 </div>
                 <h3
-                  className={clsx(
-                    'text-[20px] leading-5 mb-1',
-                    isHighlight ? 'font-medium text-white' : 'font-semibold text-gray-900'
-                  )}
+                  className={clsx('text-[20px] leading-5 mb-1 text-white', titleWeight)}
                   style={{ letterSpacing: '-0.5px' }}
                 >
                   {feature.title}
                 </h3>
                 <p
-                  className={clsx('text-[12px] leading-[19.5px]', isHighlight ? 'text-white' : 'text-gray-600')}
-                  style={isHighlight ? { letterSpacing: '-0.4px' } : undefined}
+                  className="text-[12px] leading-[19.5px] text-white"
+                  style={
+                    descriptionLetterSpacing
+                      ? { letterSpacing: descriptionLetterSpacing }
+                      : undefined
+                  }
                 >
                   {feature.description}
                 </p>
