@@ -103,8 +103,8 @@ export const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="flex-1 overflow-y-auto p-6 font-sans">
+      <div className="max-w-7xl mx-auto space-y-6 font-sans">
         {/* Welcome Section */}
         <div
           className="rounded-2xl p-8 text-white bg-cover bg-center bg-no-repeat"
@@ -117,7 +117,10 @@ export const Dashboard: React.FC = () => {
             <div className="space-y-4">
               <h1 className="text-[30px] leading-9 font-bold">
                 <span className="block font-medium tracking-[-0.8px]">Good morning,</span>
-                <span className="block tracking-[-1.2px]">{user.profile?.firstName}!</span>
+                <span className="block tracking-[-1.2px]">
+                  <span>{user.profile?.firstName}</span>
+                  <span className="ml-1">!</span>
+                </span>
               </h1>
               <p className="text-[18px] leading-7 tracking-[-0.2px] text-white">
                 Let's continue building your personalized Medicare profile.
@@ -132,9 +135,9 @@ export const Dashboard: React.FC = () => {
           <div className="mt-6">
             <Button
               onClick={handleStartChat}
-              variant="secondary"
+              variant="ghost"
               size="lg"
-              className="bg-white text-black font-medium tracking-[-0.2px] hover:bg-gray-100 border-transparent"
+              className="bg-white text-black font-medium tracking-[-0.2px] hover:bg-gray-100 border border-transparent"
             >
               Start a conversation
             </Button>
@@ -142,7 +145,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 font-sans">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
