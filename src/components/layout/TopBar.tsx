@@ -26,7 +26,7 @@ export const TopBar: React.FC = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-6">
+    <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-6 font-sans">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -36,15 +36,16 @@ export const TopBar: React.FC = () => {
         >
           <Menu className="w-5 h-5" />
         </Button>
-        
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">
+
+        <div className="flex flex-wrap items-start gap-2">
+          <h1 className="text-[20px] leading-7 font-semibold text-gray-900 tracking-[-0.4px]">
             {getViewTitle()}
           </h1>
           {user.profile && (
-            <p className="text-sm text-gray-600">
-              Welcome back, {user.profile.firstName}
-            </p>
+            <div className="flex items-baseline gap-1 text-gray-600 mt-1">
+              <span className="text-[16px] leading-[22px] tracking-[-0.4px]">Welcome back,</span>
+              <span className="text-[16px] leading-[22px] tracking-[-0.4px]">{user.profile.firstName}</span>
+            </div>
           )}
         </div>
       </div>

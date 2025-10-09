@@ -103,31 +103,41 @@ export const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="flex-1 overflow-y-auto p-6 font-sans">
+      <div className="max-w-7xl mx-auto space-y-6 font-sans">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">
-                Good morning, {user.profile?.firstName}!
+        <div
+          className="rounded-2xl p-8 text-white bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage:
+              "url('https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/714f045221884e13b5791391ab31695e')",
+          }}
+        >
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-4">
+              <h1 className="text-[30px] leading-9 font-bold">
+                <span className="block font-medium tracking-[-0.8px]">Good morning,</span>
+                <span className="block tracking-[-1.2px]">
+                  <span>{user.profile?.firstName}</span>
+                  <span className="ml-1">!</span>
+                </span>
               </h1>
-              <p className="text-blue-100 text-lg">
+              <p className="text-[18px] leading-7 tracking-[-0.2px] text-white">
                 Let's continue building your personalized Medicare profile.
               </p>
             </div>
-            <div className="hidden md:block">
-              <div className="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <Heart className="w-12 h-12 text-white" />
+            <div className="hidden md:flex">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-black">
+                <Heart className="h-9 w-9 text-white" />
               </div>
             </div>
           </div>
           <div className="mt-6">
             <Button
               onClick={handleStartChat}
-              variant="secondary"
+              variant="ghost"
               size="lg"
-              className="bg-white text-blue-600 hover:bg-gray-50"
+              className="bg-white text-black font-medium tracking-[-0.2px] hover:bg-gray-100 border border-transparent"
             >
               Start a conversation
             </Button>
@@ -135,7 +145,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 font-sans">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -157,7 +167,7 @@ export const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Quick Actions */}
           <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 tracking-[-1px]">Quick Actions</h2>
             <div className="grid gap-4">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
@@ -185,7 +195,7 @@ export const Dashboard: React.FC = () => {
 
           {/* Recent Activity */}
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4 tracking-[-1px]">Recent Activity</h2>
             <Card padding="md">
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => {

@@ -20,8 +20,11 @@ export const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div
+      className="min-h-[973px] bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-4 px-[140px] font-sans"
+      style={{ fontFamily: '__Inter_d65c78, sans-serif' }}
+    >
+      <div className="w-full">
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
@@ -43,13 +46,23 @@ export const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
         <Card className="text-center">
           {/* Logo */}
           <div className="mb-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center mb-4">
-              <span className="text-white text-xl font-bold">X</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">
+            <div
+              className="w-16 h-16 rounded-2xl mx-auto mb-4 bg-white bg-no-repeat bg-center bg-cover"
+              style={{
+                backgroundImage:
+                  'url(https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/2e08e42960c143f890de053098bc43b6)',
+              }}
+            />
+            <h1
+              className="text-[44px] font-bold text-gray-900 leading-8 mb-2"
+              style={{ letterSpacing: '-2.6px' }}
+            >
               {title}
             </h1>
-            <p className="text-gray-600 leading-relaxed">
+            <p
+              className="text-gray-600 leading-[26px]"
+              style={{ letterSpacing: '-0.2px' }}
+            >
               {description}
             </p>
           </div>

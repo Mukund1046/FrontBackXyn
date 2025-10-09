@@ -49,7 +49,10 @@ export const Complete: React.FC = () => {
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+              <div
+                key={index}
+                className="flex items-center justify-center gap-3 p-3 bg-gray-50 rounded-lg"
+              >
                 <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Icon className="w-4 h-4 text-blue-600" />
                 </div>
