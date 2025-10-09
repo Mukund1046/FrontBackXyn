@@ -50,10 +50,13 @@ export const Welcome: React.FC = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
                   <Icon className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="font-semibold text-sm text-gray-900 mb-1">
+                <h3
+                  className="text-[20px] leading-5 font-semibold text-gray-900 mb-1"
+                  style={{ letterSpacing: '-0.5px' }}
+                >
                   {feature.title}
                 </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
+                <p className="text-[12px] leading-[19.5px] text-gray-600">
                   {feature.description}
                 </p>
               </div>
