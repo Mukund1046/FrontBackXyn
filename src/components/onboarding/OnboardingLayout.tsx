@@ -20,7 +20,10 @@ export const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <div className="min-h-[973px] bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-4 px-[140px]">
+    <div
+      className="min-h-[973px] bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-4 px-[140px] font-sans"
+      style={{ fontFamily: '__Inter_d65c78, sans-serif' }}
+    >
       <div className="w-full">
         {/* Progress Bar */}
         <div className="mb-8">
