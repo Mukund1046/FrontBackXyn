@@ -167,7 +167,7 @@ export const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Quick Actions */}
           <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 tracking-[-1px]">Quick Actions</h2>
             <div className="grid gap-4">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
@@ -195,7 +195,7 @@ export const Dashboard: React.FC = () => {
 
           {/* Recent Activity */}
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4 tracking-[-1px]">Recent Activity</h2>
             <Card padding="md">
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => {
