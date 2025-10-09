@@ -64,21 +64,27 @@ export const Welcome: React.FC = () => {
           })}
         </div>
 
-        <div className="space-y-4 pt-4">
-          <Button onClick={handleNext} className="w-full" size="lg">
+        <div className="pt-4 mt-6 space-y-4">
+          <Button onClick={handleNext} className="w-full font-sans" size="lg">
             Get Started
           </Button>
-          
-          <p className="text-xs text-gray-500 leading-relaxed">
-            By continuing, you agree to our{' '}
-            <a href="#" className="text-blue-600 hover:underline">
+
+          <div className="text-xs text-gray-500 leading-[19.5px] space-y-1 font-normal">
+            <div className="font-sans">By continuing, you agree to our</div>
+            <a
+              href="https://a460071213bd4f2a92e0b189e4f951c7-f8f86bf3e9224ea1be2ab015a.fly.dev/?reload=1759998944035#"
+              className="text-blue-600 hover:underline font-sans"
+            >
               Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="#" className="text-blue-600 hover:underline">
+            </a>
+            <div className="font-sans">and</div>
+            <a
+              href="https://a460071213bd4f2a92e0b189e4f951c7-f8f86bf3e9224ea1be2ab015a.fly.dev/?reload=1759998944035#"
+              className="text-blue-600 hover:underline font-sans"
+            >
               Privacy Policy
             </a>
-          </p>
+          </div>
         </div>
       </div>
     </OnboardingLayout>
