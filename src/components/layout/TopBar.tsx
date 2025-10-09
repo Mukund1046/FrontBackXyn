@@ -36,15 +36,16 @@ export const TopBar: React.FC = () => {
         >
           <Menu className="w-5 h-5" />
         </Button>
-        
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">
+
+        <div className="space-y-1">
+          <h1 className="text-[20px] leading-7 font-semibold text-gray-900 tracking-[-0.4px]">
             {getViewTitle()}
           </h1>
           {user.profile && (
-            <p className="text-sm text-gray-600">
-              Welcome back, {user.profile.firstName}
-            </p>
+            <div className="text-gray-600 text-sm leading-5">
+              <div className="text-[16px] tracking-[-0.4px]">Welcome back,</div>
+              <div className="text-[16px] tracking-[-0.4px]">{user.profile.firstName}</div>
+            </div>
           )}
         </div>
       </div>
