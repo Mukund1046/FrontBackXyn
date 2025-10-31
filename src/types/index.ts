@@ -15,6 +15,9 @@ export interface UserProfile {
   profileCompleteness: number;
   createdAt: Date;
   updatedAt: Date;
+  chatPersonality?: {
+    averageMessageLength: number;
+  };
 }
 
 export interface ChatMessage {
@@ -62,6 +65,7 @@ export interface AppState {
   };
   chat: ChatState;
   medicare: {
+    length: number;
     plans: MedicarePlan[];
     selectedPlan: MedicarePlan | null;
   };
@@ -69,6 +73,7 @@ export interface AppState {
     theme: 'light' | 'dark';
     sidebarOpen: boolean;
     currentView: string;
+    notification: Notification | null;
   };
 }
 
@@ -87,4 +92,10 @@ export interface HealthAssessment {
   allergies: string[];
   goals: string[];
   concerns: string[];
+}
+
+export interface Notification {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info';
 }

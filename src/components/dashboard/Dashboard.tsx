@@ -1,19 +1,20 @@
-import React from 'react';
+import React, {  } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { SkeletonCard, SkeletonText } from '../ui/LoadingSpinner';
 import { useAppStore } from '../../stores/useAppStore';
+import { FeatureErrorBoundary } from '../error/FeatureErrorBoundary';
 import {
   MessageSquare,
   User,
   Shield,
-  TrendingUp,
-  Calendar,
   Heart,
   AlertCircle,
 } from 'lucide-react';
 
-export const Dashboard: React.FC = () => {
+const DashboardContent: React.FC = () => {
   const { user, setCurrentView, chat } = useAppStore();
+  const isLoading = !user?.profile;
 
   const handleStartChat = () => {
     setCurrentView('chat');
@@ -81,26 +82,52 @@ export const Dashboard: React.FC = () => {
     },
   ];
 
-  const recentActivity = [
-    {
+  const recentActivity = chat.messages
+    .filter((msg) => msg.type === 'user')
+    .slice(-3)
+    .map((msg) => ({
       type: 'chat',
-      title: 'Asked about Medicare Part D',
-      time: '2 hours ago',
+      title: `You: "${msg.content.substring(0, 30)}..."`,
+      time: new Date(msg.timestamp).toLocaleTimeString(),
       icon: MessageSquare,
-    },
-    {
-      type: 'profile',
-      title: 'Updated medications list',
-      time: '1 day ago',
-      icon: User,
-    },
-    {
-      type: 'system',
-      title: 'Profile completeness increased',
-      time: '2 days ago',
-      icon: TrendingUp,
-    },
-  ];
+    }));
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-y-auto p-6 font-sans">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Loading Header */}
+          <div className="space-y-4">
+            <SkeletonText lines={2} width="lg" />
+            <SkeletonText lines={1} width="md" />
+          </div>
+          
+          {/* Loading Stats */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <SkeletonCard key={index} className="h-20" />
+            ))}
+          </div>
+          
+          {/* Loading Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-4">
+              <SkeletonText lines={1} width="md" />
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <SkeletonCard key={index} className="h-24" />
+                ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <SkeletonText lines={1} width="md" />
+              <SkeletonCard className="h-48" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-6 font-sans">
@@ -115,14 +142,14 @@ export const Dashboard: React.FC = () => {
         >
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-4">
-              <h1 className="text-[30px] leading-9 font-bold">
-                <span className="block font-medium tracking-[-0.8px]">Good morning,</span>
+              <h1 className="text-h1 font-medium">
+                <span className="block text-h1 font-medium tracking-[-1.8px]">Good morning,</span>
                 <span className="block tracking-[-1.2px]">
                   <span>{user.profile?.firstName}</span>
                   <span className="ml-1">!</span>
                 </span>
               </h1>
-              <p className="text-[18px] leading-7 tracking-[-0.2px] text-white">
+              <p className="text-h4 tracking-[-0.4px] text-white">
                 Let's continue building your personalized Medicare profile.
               </p>
             </div>
@@ -155,7 +182,7 @@ export const Dashboard: React.FC = () => {
                     <Icon className={`w-6 h-6 ${stat.color}`} />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-h2 font-bold text-gray-900">{stat.value}</p>
                     <p className="text-sm text-gray-600">{stat.label}</p>
                   </div>
                 </div>
@@ -167,7 +194,7 @@ export const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Quick Actions */}
           <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 tracking-[-1px]">Quick Actions</h2>
+            <h2 className="text-h2 font-semibold text-gray-900 mb-4">Quick Actions</h2>
             <div className="grid gap-4">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
@@ -178,7 +205,7 @@ export const Dashboard: React.FC = () => {
                         <Icon className={`w-6 h-6 ${action.color}`} />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">{action.title}</h3>
+                        <h3 className="text-h3 font-semibold text-gray-900">{action.title}</h3>
                         <p className="text-sm text-gray-600">{action.description}</p>
                       </div>
                       <div className="text-gray-400">
@@ -193,29 +220,33 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Recent Activity */}
+          {/* Recent Activity & Profile Reminder */}
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-4 tracking-[-1px]">Recent Activity</h2>
-            <Card padding="md">
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => {
-                  const Icon = activity.icon;
-                  return (
-                    <div key={index} className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Icon className="w-4 h-4 text-gray-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">
-                          {activity.title}
-                        </p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+            {recentActivity.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-h2 font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                <Card padding="md">
+                  <div className="space-y-4">
+                    {recentActivity.map((activity, index) => {
+                      const Icon = activity.icon;
+                      return (
+                        <div key={index} className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg" onClick={() => setCurrentView('chat')}>
+                          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Icon className="w-4 h-4 text-gray-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {activity.title}
+                            </p>
+                            <p className="text-xs text-gray-500">{activity.time}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
               </div>
-            </Card>
+            )}
 
             {/* Profile Completion Reminder */}
             {(user.profile?.profileCompleteness || 0) < 100 && (
@@ -223,7 +254,7 @@ export const Dashboard: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5" />
                   <div>
-                    <h3 className="font-medium text-orange-900">
+                    <h3 className="text-h3 font-medium text-orange-900">
                       Complete Your Profile
                     </h3>
                     <p className="text-sm text-orange-700 mt-1">
@@ -241,8 +272,17 @@ export const Dashboard: React.FC = () => {
               </Card>
             )}
           </div>
-        </div>
+          </div>
       </div>
     </div>
+  );
+};
+
+export const Dashboard: React.FC = () => {
+  const { setCurrentView } = useAppStore();
+  return (
+    <FeatureErrorBoundary feature="dashboard" navigate={() => setCurrentView('dashboard')}>
+      <DashboardContent />
+    </FeatureErrorBoundary>
   );
 };

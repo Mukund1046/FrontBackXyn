@@ -1,42 +1,124 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
+import { ChatStarters } from './ChatStarters';
 import { useAppStore } from '../../stores/useAppStore';
-import { generateAIResponse, extractHealthInfo } from '../../lib/ai-sdk';
+import { useDocumentStore } from '../../stores/useDocumentStore';
+import { getMedicalChatResponse } from '../../lib/backend-api';
 import { generateId } from '../../lib/utils';
-import { Send, Bot, User } from 'lucide-react';
+import { FeatureErrorBoundary } from '../error/FeatureErrorBoundary';
+import Markdown from 'markdown-to-jsx';
+import { Send, Bot, User, ArrowUp, Paperclip } from 'lucide-react';
 
-export const ChatInterface: React.FC = () => {
+// Define a specific type for profile updates to ensure type safety
+type ProfileUpdates = {
+  medications?: string[];
+  healthConditions?: string[];
+  profileCompleteness?: number;
+};
+
+const ChatInterfaceContent: React.FC = () => {
   const {
     chat,
     addMessage,
     setLoading,
     updateProfile,
-    geminiApiKey,
     user,
+    showNotification,
   } = useAppStore();
   
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleScroll = () => {
+    if (messagesContainerRef.current) {
+      const { scrollTop } = messagesContainerRef.current;
+      setShowScrollToTop(scrollTop > 200);
+    }
+  };
+
+  const scrollToTop = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [chat.messages]);
+
+  const updateUserChatPersonality = (messageContent: string) => {
+    if (!user.profile) return;
+
+    const userMessages = chat.messages.filter(m => m.type === 'user');
+    const messageCount = userMessages.length;
+    
+    if (messageCount === 0) return;
+
+    const currentAvg = user.profile.chatPersonality?.averageMessageLength || 0;
+    const newAvg = (currentAvg * (messageCount - 1) + messageContent.length) / messageCount;
+
+    updateProfile({
+      chatPersonality: {
+        averageMessageLength: newAvg,
+      },
+    });
+  };
+
+  const { addDocument, documents } = useDocumentStore();
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      addDocument(file);
+      showNotification({ message: `File "${file.name}" uploaded successfully.`, type: 'success' });
+    }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleProfileUpdateFromChat = (extractedInfo: any) => {
+    if (!user.profile || !extractedInfo || Object.keys(extractedInfo).length === 0) {
+      return;
+    }
+  
+    const profileUpdates: ProfileUpdates = {};
+  
+    if (extractedInfo.medications && extractedInfo.medications.length > 0) {
+      const newMedications = Array.from(new Set([...(user.profile.medications || []), ...extractedInfo.medications]));
+      profileUpdates.medications = newMedications;
+    }
+  
+    if (extractedInfo.conditions && extractedInfo.conditions.length > 0) {
+      const newConditions = Array.from(new Set([...(user.profile.healthConditions || []), ...extractedInfo.conditions]));
+      profileUpdates.healthConditions = newConditions;
+    }
+  
+    if (Object.keys(profileUpdates).length > 0) {
+      profileUpdates.profileCompleteness = Math.min((user.profile.profileCompleteness || 0) + 5, 100);
+      updateProfile(profileUpdates);
+    }
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!inputValue.trim() || chat.isLoading) return;
-    
-    if (!geminiApiKey) {
-      alert('Please configure your Gemini API key in settings.');
-      return;
-    }
 
     const userMessage = {
       id: generateId(),
@@ -46,59 +128,34 @@ export const ChatInterface: React.FC = () => {
     };
 
     addMessage(userMessage);
+    updateUserChatPersonality(userMessage.content);
     setInputValue('');
     setLoading(true);
 
     try {
-      const conversationHistory = chat.messages.map(msg => ({
+      const chatHistory = chat.messages.map(msg => ({
         role: msg.type === 'user' ? 'user' : 'assistant',
         content: msg.content,
       }));
 
-      conversationHistory.push({
-        role: 'user',
-        content: userMessage.content,
-      });
+      const documentKeywords = documents.flatMap(doc => doc.extractedKeywords || []);
 
-      const response = await generateAIResponse(conversationHistory);
+      const medicalResponse = await getMedicalChatResponse(
+        userMessage.content, 
+        chatHistory,
+        user.profile?.chatPersonality,
+        documentKeywords
+      );
       
-      // Extract health information for profile building
-      const extractedInfo = extractHealthInfo(response.content);
-      
-      // Update user profile if new health information is found
-      if (Object.keys(extractedInfo).length > 0 && user.profile) {
-        const profileUpdates: any = {};
-        
-        if (extractedInfo.medications) {
-          const newMedications = [...user.profile.medications, ...extractedInfo.medications]
-            .filter((med, index, arr) => arr.indexOf(med) === index);
-          profileUpdates.medications = newMedications;
-        }
-        
-        if (extractedInfo.conditions) {
-          const newConditions = [...user.profile.healthConditions, ...extractedInfo.conditions]
-            .filter((cond, index, arr) => arr.indexOf(cond) === index);
-          profileUpdates.healthConditions = newConditions;
-        }
-        
-        if (Object.keys(profileUpdates).length > 0) {
-          // Increase profile completeness
-          profileUpdates.profileCompleteness = Math.min(
-            (user.profile.profileCompleteness || 0) + 5,
-            100
-          );
-          updateProfile(profileUpdates);
-        }
-      }
+      handleProfileUpdateFromChat(medicalResponse.extracted_info);
 
       const aiMessage = {
         id: generateId(),
-        content: response.content,
+        content: medicalResponse.text_content,
         type: 'ai' as const,
         timestamp: new Date(),
         metadata: {
-          extracted_info: extractedInfo,
-          usage: response.usage,
+          extracted_info: medicalResponse.extracted_info,
         },
       };
 
@@ -107,7 +164,7 @@ export const ChatInterface: React.FC = () => {
       console.error('Chat error:', error);
       const errorMessage = {
         id: generateId(),
-        content: 'I apologize, but I encountered an error processing your message. Please try again or check your API key configuration.',
+        content: 'I apologize, but I encountered an error processing your message. Please try again.',
         type: 'ai' as const,
         timestamp: new Date(),
       };
@@ -118,31 +175,13 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
+  const formatTime = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
   };
-
-  if (!geminiApiKey) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <Card className="text-center max-w-md">
-          <Bot className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            AI Assistant Not Configured
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Please configure your Gemini API key to start chatting with your AI health assistant.
-          </p>
-          <Button variant="outline">
-            Configure API Key
-          </Button>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col h-full">
@@ -153,32 +192,25 @@ export const ChatInterface: React.FC = () => {
             <Bot className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h2 className="font-medium font-sans text-xl tracking-tight
-              text-gray-900">Xyn.ai Assistant</h2>
-            <p className="text-sm text-md tracking-tight text-gray-600">Your Medicare health guide</p>
+            <h2 className="text-h2 font-medium text-gray-900">Xyn.ai Assistant</h2>
+            <p className="text-body-small text-gray-600">Your Medicare health guide</p>
           </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4 relative">
         {chat.messages.length === 0 && (
           <div className="text-center py-12">
             <Bot className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-h3 font-semibold text-gray-900 mb-2">
               Start a conversation
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-body-medium text-gray-600 mb-4">
               Ask me anything about Medicare, your health coverage, or get personalized recommendations.
             </p>
             <div className="text-left max-w-md mx-auto">
-              <p className="text-sm font-medium text-gray-700 mb-2">Try asking:</p>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• "What Medicare plan is best for me?"</li>
-                <li>• "How does Medicare Part D work?"</li>
-                <li>• "I need help with prescription coverage"</li>
-                <li>• "What are my out-of-pocket costs?"</li>
-              </ul>
+              <ChatStarters setInputValue={setInputValue} />
             </div>
           </div>
         )}
@@ -203,9 +235,31 @@ export const ChatInterface: React.FC = () => {
                   : 'bg-gray-100 text-gray-900'
               }`}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                {message.content}
-              </p>
+              <div className="text-sm leading-relaxed overflow-x-auto">
+                {/* FIX: Define overrides inline to resolve TypeScript error */}
+                <Markdown options={{
+                  overrides: {
+                    h1: { component: 'h1', props: { className: 'text-h1 font-semibold mt-4 mb-2' } },
+                    h2: { component: 'h2', props: { className: 'text-h2 font-semibold mt-3 mb-1' } },
+                    h3: { component: 'h3', props: { className: 'text-h3 font-semibold mt-2 mb-1' } },
+                    p: { component: 'p', props: { className: 'mb-1' } },
+                    ul: { component: 'ul', props: { className: 'list-disc list-inside mb-1 ml-4' } },
+                    ol: { component: 'ol', props: { className: 'list-decimal list-inside mb-1 ml-4' } },
+                    li: { component: 'li', props: { className: 'mb-0.5' } },
+                    a: { component: 'a', props: { className: 'text-blue-500 hover:underline' } },
+                    strong: { component: 'strong', props: { className: 'font-semibold' } },
+                    em: { component: 'em', props: { className: 'italic' } },
+                    table: { component: 'table', props: { className: 'table-auto w-full my-2 border-collapse' } },
+                    thead: { component: 'thead', props: { className: 'bg-gray-200' } },
+                    th: { component: 'th', props: { className: 'px-4 py-2 text-left border border-gray-300' } },
+                    tbody: { component: 'tbody' },
+                    tr: { component: 'tr', props: { className: 'border-b border-gray-200' } },
+                    td: { component: 'td', props: { className: 'px-4 py-2 border border-gray-300' } },
+                  }
+                }}>
+                  {message.content}
+                </Markdown>
+              </div>
               <p
                 className={`text-xs mt-1 ${
                   message.type === 'user'
@@ -241,6 +295,15 @@ export const ChatInterface: React.FC = () => {
         )}
 
         <div ref={messagesEndRef} />
+
+        {showScrollToTop && (
+          <Button
+            onClick={scrollToTop}
+            className="absolute bottom-4 right-4 rounded-full w-10 h-10 p-2 bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+          >
+            <ArrowUp className="w-6 h-6" />
+          </Button>
+        )}
       </div>
 
       {/* Input Form */}
@@ -255,6 +318,22 @@ export const ChatInterface: React.FC = () => {
             className="flex-1 px-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             disabled={chat.isLoading}
           />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept=".pdf,.png,.jpg,.jpeg"
+          />
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => fileInputRef.current?.click()}
+            className="rounded-full px-2"
+          >
+            <Paperclip className="w-4 h-4" />
+          </Button>
           <Button
             type="submit"
             size="sm"
@@ -266,5 +345,14 @@ export const ChatInterface: React.FC = () => {
         </form>
       </div>
     </div>
+  );
+};
+
+export const ChatInterface: React.FC = () => {
+  const { setCurrentView } = useAppStore();
+  return (
+    <FeatureErrorBoundary feature="chat" navigate={() => setCurrentView('dashboard')}>
+      <ChatInterfaceContent />
+    </FeatureErrorBoundary>
   );
 };

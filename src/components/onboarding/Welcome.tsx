@@ -86,18 +86,13 @@ export const Welcome: React.FC = () => {
                   <Icon className="h-10 w-10 text-blue-600" />
                 </div>
                 <h3
-                  className={clsx('text-[20px] leading-5 mb-1 text-white', titleWeight)}
-                  style={{ letterSpacing: '-0.5px' }}
+                  className={clsx('text-h4 mb-1 text-white', titleWeight)}
                 >
                   {feature.title}
                 </h3>
                 <p
-                  className="text-[12px] leading-[19.5px] text-white"
-                  style={
-                    descriptionLetterSpacing
-                      ? { letterSpacing: descriptionLetterSpacing }
-                      : undefined
-                  }
+                  className="text-caption text-white"
+                  style={descriptionLetterSpacing ? { letterSpacing: descriptionLetterSpacing } : undefined}
                 >
                   {feature.description}
                 </p>

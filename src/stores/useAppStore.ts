@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AppState, UserProfile, ChatMessage, OnboardingStep } from '../types';
+import type { AppState, UserProfile, ChatMessage, OnboardingStep, Notification } from '../types';
 
 interface AppStore extends AppState {
   // User actions
@@ -19,6 +19,8 @@ interface AppStore extends AppState {
   toggleSidebar: () => void;
   setCurrentView: (view: string) => void;
   setTheme: (theme: 'light' | 'dark') => void;
+  showNotification: (notification: Omit<Notification, 'id'>) => void;
+  hideNotification: () => void;
   
   // Onboarding
   onboardingSteps: OnboardingStep[];
@@ -26,9 +28,6 @@ interface AppStore extends AppState {
   setCurrentStep: (step: number) => void;
   completeStep: (stepId: string) => void;
   
-  // API Key management
-  geminiApiKey: string | null;
-  setGeminiApiKey: (key: string) => void;
 }
 
 const initialOnboardingSteps: OnboardingStep[] = [
@@ -97,10 +96,10 @@ export const useAppStore = create<AppStore>()(
         theme: 'light',
         sidebarOpen: false,
         currentView: 'dashboard',
+        notification: null,
       },
       onboardingSteps: initialOnboardingSteps,
       currentStep: 0,
-      geminiApiKey: null,
 
       // User actions
       setUser: (profile) =>
@@ -113,13 +112,23 @@ export const useAppStore = create<AppStore>()(
           user: {
             ...state.user,
             profile: state.user.profile
-              ? { ...state.user.profile, ...updates, updatedAt: new Date() }
+              ? {
+                  ...state.user.profile,
+                  ...updates,
+                  preferences: updates.preferences
+                    ? { ...state.user.profile.preferences, ...updates.preferences }
+                    : state.user.profile.preferences,
+                  chatPersonality: updates.chatPersonality
+                    ? { ...state.user.profile.chatPersonality, ...updates.chatPersonality }
+                    : state.user.profile.chatPersonality,
+                  updatedAt: new Date(),
+                }
               : null,
           },
         })),
 
       logout: () =>
-        set((state) => ({
+        set(() => ({
           user: {
             profile: null,
             isAuthenticated: false,
@@ -131,6 +140,14 @@ export const useAppStore = create<AppStore>()(
             currentContext: '',
             sessionId: '',
           },
+          ui: {
+            theme: 'light',
+            sidebarOpen: false,
+            currentView: 'dashboard',
+            notification: null,
+          },
+          onboardingSteps: initialOnboardingSteps,
+          currentStep: 0,
         })),
 
       completeOnboarding: () =>
@@ -181,6 +198,19 @@ export const useAppStore = create<AppStore>()(
         set((state) => ({
           ui: { ...state.ui, theme },
         })),
+      
+      showNotification: (notification) =>
+        set((state) => ({
+          ui: {
+            ...state.ui,
+            notification: { ...notification, id: new Date().toISOString() },
+          },
+        })),
+
+      hideNotification: () =>
+        set((state) => ({
+          ui: { ...state.ui, notification: null },
+        })),
 
       // Onboarding actions
       setCurrentStep: (step) => set({ currentStep: step }),
@@ -192,28 +222,16 @@ export const useAppStore = create<AppStore>()(
           ),
         })),
 
-      // API Key management
-      setGeminiApiKey: (key) => {
-        set({ geminiApiKey: key });
-        // Initialize AI with the new key
-        try {
-          // This will be imported dynamically to avoid circular dependencies
-          import('../lib/ai-sdk').then(({ initializeAI }) => {
-            initializeAI(key);
-          });
-        } catch (error) {
-          console.error('Failed to initialize AI:', error);
-        }
-      },
+
     }),
     {
       name: 'xynai-storage',
       partialize: (state) => ({
         user: state.user,
+        chat: state.chat, // Persist chat history
         ui: {
           theme: state.ui.theme,
         },
-        geminiApiKey: state.geminiApiKey,
         onboardingSteps: state.onboardingSteps,
         currentStep: state.currentStep,
       }),

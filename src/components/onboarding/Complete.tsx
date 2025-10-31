@@ -5,10 +5,11 @@ import { useAppStore } from '../../stores/useAppStore';
 import { CheckCircle, MessageSquare, User, Shield } from 'lucide-react';
 
 export const Complete: React.FC = () => {
-  const { onboardingSteps, completeOnboarding, user } = useAppStore();
+  const { onboardingSteps, completeOnboarding, user, setCurrentView } = useAppStore();
 
   const handleComplete = () => {
     completeOnboarding();
+    setCurrentView('dashboard');
   };
 
   const features = [

@@ -4,35 +4,15 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useAppStore } from '../../stores/useAppStore';
 import {
-  Key,
   Shield,
   Bell,
   Palette,
   Download,
   Trash,
-  ExternalLink,
-  Eye,
-  EyeOff,
 } from 'lucide-react';
 
 export const Settings: React.FC = () => {
-  const { geminiApiKey, setGeminiApiKey, user, ui } = useAppStore();
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [newApiKey, setNewApiKey] = useState(geminiApiKey || '');
-  const [isValidating, setIsValidating] = useState(false);
-
-  const handleApiKeyUpdate = async () => {
-    if (!newApiKey.trim()) return;
-
-    setIsValidating(true);
-    
-    // Simulate validation
-    setTimeout(() => {
-      setGeminiApiKey(newApiKey);
-      setIsValidating(false);
-      alert('API key updated successfully!');
-    }, 1000);
-  };
+  const { user, ui, showNotification, updateProfile } = useAppStore();
 
   const handleExportData = () => {
     const data = {
@@ -53,61 +33,6 @@ export const Settings: React.FC = () => {
   };
 
   const settingSections = [
-    {
-      title: 'AI Assistant Configuration',
-      icon: Key,
-      content: (
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Gemini API Key
-              </label>
-              <a
-                href="https://makersuite.google.com/app/apikey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
-              >
-                Get API Key
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-            <div className="relative">
-              <input
-                type={showApiKey ? 'text' : 'password'}
-                value={newApiKey}
-                onChange={(e) => setNewApiKey(e.target.value)}
-                placeholder="Enter your Gemini API key..."
-                className="w-full px-4 py-2 pr-20 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
-                <button
-                  type="button"
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  className="p-1 text-gray-400 hover:text-gray-600"
-                >
-                  {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-            <div className="flex gap-2 mt-3">
-              <Button
-                onClick={handleApiKeyUpdate}
-                loading={isValidating}
-                disabled={!newApiKey.trim() || newApiKey === geminiApiKey}
-                size="sm"
-              >
-                Update API Key
-              </Button>
-            </div>
-            <p className="text-xs text-gray-600 mt-2">
-              🔒 Your API key is encrypted and stored locally. It's never shared with third parties.
-            </p>
-          </div>
-        </div>
-      ),
-    },
     {
       title: 'Privacy & Security',
       icon: Shield,
@@ -161,6 +86,16 @@ export const Settings: React.FC = () => {
                 type="checkbox"
                 className="sr-only peer"
                 checked={user.profile?.preferences.notifications}
+                onChange={(e) => {
+                  if (user.profile) {
+                    updateProfile({
+                      preferences: {
+                        ...user.profile.preferences,
+                        notifications: e.target.checked,
+                      },
+                    });
+                  }
+                }}
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
             </label>

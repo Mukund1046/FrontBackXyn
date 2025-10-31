@@ -54,14 +54,12 @@ export const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
               }}
             />
             <h1
-              className="text-[44px] font-bold text-gray-900 leading-8 mb-2"
-              style={{ letterSpacing: '-2.6px' }}
+              className="text-h1 font-semibold text-gray-900 mb-2"
             >
               {title}
             </h1>
             <p
-              className="text-gray-600 leading-[26px]"
-              style={{ letterSpacing: '-0.2px' }}
+              className="text-body-large text-gray-600"
             >
               {description}
             </p>

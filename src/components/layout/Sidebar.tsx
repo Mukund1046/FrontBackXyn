@@ -10,6 +10,7 @@ import {
   Home,
   X,
   LogOut,
+  FileText,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -25,6 +26,7 @@ export const Sidebar: React.FC = () => {
     { name: 'Dashboard', icon: Home, id: 'dashboard' },
     { name: 'Chat with AI', icon: MessageSquare, id: 'chat' },
     { name: 'My Profile', icon: User, id: 'profile' },
+    { name: 'Documents', icon: FileText, id: 'documents' },
     { name: 'Medicare Plans', icon: Shield, id: 'plans' },
     { name: 'Settings', icon: Settings, id: 'settings' },
     { name: 'Help', icon: HelpCircle, id: 'help' },
@@ -65,7 +67,7 @@ export const Sidebar: React.FC = () => {
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">X</span>
               </div>
-              <span className="font-bold text-gray-900 tracking-[-0.6px]">Xyn.ai</span>
+              <span className="text-h4 font-semibold text-gray-900">Xyn.ai</span>
             </div>
             <button
               onClick={toggleSidebar}
