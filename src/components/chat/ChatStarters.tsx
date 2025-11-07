@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { useAppStore } from '../../stores/useAppStore';
 
@@ -51,12 +52,38 @@ export const ChatStarters: React.FC<ChatStartersProps> = ({ setInputValue }) => 
 
   return (
     <div className="text-left max-w-md mx-auto">
-      <p className="text-body-small font-medium text-gray-700 mb-2">Try asking:</p>
-      <div className="flex flex-wrap gap-2">
+      <motion.p
+        className="text-sm font-semibold text-gray-700 mb-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+      >
+        Try asking:
+      </motion.p>
+      <div className="flex flex-wrap gap-3">
         {starters.map((starter, index) => (
-          <Button key={index} variant="outline" size="sm" onClick={() => setInputValue(starter)}>
-            {starter}
-          </Button>
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              delay: 0.7 + index * 0.1,
+              type: 'spring',
+              stiffness: 200,
+              damping: 15
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setInputValue(starter)}
+              className="whitespace-nowrap"
+            >
+              {starter}
+            </Button>
+          </motion.div>
         ))}
       </div>
     </div>

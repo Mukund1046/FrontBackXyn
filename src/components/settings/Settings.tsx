@@ -20,7 +20,7 @@ export const Settings: React.FC = () => {
       preferences: user.profile?.preferences,
       exportDate: new Date().toISOString(),
     };
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -47,13 +47,20 @@ export const Settings: React.FC = () => {
               Enable
             </Button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-gray-900">Session Timeout</p>
               <p className="text-sm text-gray-600">Auto-logout after inactivity</p>
             </div>
-            <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+            <label htmlFor="session-timeout" className="sr-only">
+              Session timeout
+            </label>
+            <select
+              id="session-timeout"
+              className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              aria-label="Select session timeout duration"
+            >
               <option>30 minutes</option>
               <option>1 hour</option>
               <option>2 hours</option>
@@ -96,11 +103,12 @@ export const Settings: React.FC = () => {
                     });
                   }
                 }}
+                aria-label="Enable email notifications"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" aria-hidden="true"></div>
             </label>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-gray-900">Push Notifications</p>
@@ -111,8 +119,9 @@ export const Settings: React.FC = () => {
                 type="checkbox"
                 className="sr-only peer"
                 defaultChecked
+                aria-label="Enable push notifications"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" aria-hidden="true"></div>
             </label>
           </div>
 
@@ -126,8 +135,9 @@ export const Settings: React.FC = () => {
                 type="checkbox"
                 className="sr-only peer"
                 defaultChecked
+                aria-label="Enable chat notifications"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" aria-hidden="true"></div>
             </label>
           </div>
         </div>
@@ -148,7 +158,7 @@ export const Settings: React.FC = () => {
               Export
             </Button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-gray-900">Clear Chat History</p>

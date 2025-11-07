@@ -42,8 +42,8 @@ const priorityLevels = [
 export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { user } = useAppStore();
   const [formData, setFormData] = useState<ContactFormData>({
-    name: user.profile?.firstName && user.profile?.lastName 
-      ? `${user.profile.firstName} ${user.profile.lastName}` 
+    name: user.profile?.firstName && user.profile?.lastName
+      ? `${user.profile.firstName} ${user.profile.lastName}`
       : '',
     email: user.profile?.email || '',
     category: 'general',
@@ -52,7 +52,7 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     message: '',
     includeSystemInfo: true,
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -86,7 +86,7 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -120,7 +120,7 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleInputChange = (field: keyof ContactFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -134,11 +134,11 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          
+
           <h2 className="text-2xl font-bold text-gray-900">
             Message Sent Successfully!
           </h2>
-          
+
           <p className="text-gray-600">
             Thank you for contacting us. We've received your message and will get back to you within 24 hours.
           </p>
@@ -189,7 +189,7 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 error={errors.name}
                 required
               />
-              
+
               <Input
                 label="Email Address"
                 type="email"
@@ -202,15 +202,17 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
             {/* Category and Priority */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category *
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => handleInputChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
+            <div>
+              <label htmlFor="contact-category" className="block text-sm font-medium text-gray-700 mb-2">
+                Category *
+              </label>
+              <select
+                id="contact-category"
+                value={formData.category}
+                onChange={(e) => handleInputChange('category', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                aria-required="true"
+              >
                   {contactCategories.map(category => (
                     <option key={category.value} value={category.value}>
                       {category.label}
@@ -220,13 +222,15 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="contact-priority" className="block text-sm font-medium text-gray-700 mb-2">
                   Priority *
                 </label>
                 <select
+                  id="contact-priority"
                   value={formData.priority}
                   onChange={(e) => handleInputChange('priority', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  aria-required="true"
                 >
                   {priorityLevels.map(priority => (
                     <option key={priority.value} value={priority.value}>
@@ -249,10 +253,11 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
             {/* Message */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700 mb-2">
                 Message *
               </label>
               <textarea
+                id="contact-message"
                 value={formData.message}
                 onChange={(e) => handleInputChange('message', e.target.value)}
                 placeholder="Please provide as much detail as possible about your question or issue..."
@@ -260,9 +265,14 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.message ? 'border-red-500' : 'border-gray-300'
                 }`}
+                aria-required="true"
+                aria-invalid={errors.message ? 'true' : 'false'}
+                aria-describedby={errors.message ? 'contact-message-error' : undefined}
               />
               {errors.message && (
-                <p className="text-sm text-red-600 mt-1">{errors.message}</p>
+                <p id="contact-message-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.message}
+                </p>
               )}
               <p className="text-xs text-gray-500 mt-1">
                 {formData.message.length} characters (minimum 10)
@@ -317,7 +327,7 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <h3 className="font-semibold text-blue-900">
             Need immediate help?
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -328,7 +338,7 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <p className="text-sm text-blue-700">Available 24/7</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <Mail className="w-5 h-5 text-blue-600" />
@@ -338,7 +348,7 @@ export const ContactForm: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <p className="text-sm text-blue-700">support@xynai.com</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <Clock className="w-5 h-5 text-blue-600" />

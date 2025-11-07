@@ -32,18 +32,18 @@ const ProfileContent: React.FC = () => {
   };
 
   const handleSaveCondition = async () => {
-    if (!newCondition.trim()) return;
+    if (!newCondition.trim() || !user.profile) return;
 
-    const updatedConditions = [...profile.healthConditions, newCondition.trim()];
+    const updatedConditions = [...user.profile.healthConditions, newCondition.trim()];
     await updateProfile({ healthConditions: updatedConditions });
     setNewCondition('');
     setIsAddingCondition(false);
   };
 
   const handleSaveMedication = async () => {
-    if (!newMedication.trim()) return;
+    if (!newMedication.trim() || !user.profile) return;
 
-    const updatedMedications = [...profile.medications, newMedication.trim()];
+    const updatedMedications = [...user.profile.medications, newMedication.trim()];
     await updateProfile({ medications: updatedMedications });
     setNewMedication('');
     setIsAddingMedication(false);
@@ -59,21 +59,27 @@ const ProfileContent: React.FC = () => {
   };
 
   const handleDeleteCondition = async (condition: string) => {
-    const updatedConditions = profile.healthConditions.filter(c => c !== condition);
+    if (!user.profile) return;
+    const updatedConditions = user.profile.healthConditions.filter(c => c !== condition);
     await updateProfile({ healthConditions: updatedConditions });
   };
 
   const handleDeleteMedication = async (medication: string) => {
-    const updatedMedications = profile.medications.filter(m => m !== medication);
+    if (!user.profile) return;
+    const updatedMedications = user.profile.medications.filter(m => m !== medication);
     await updateProfile({ medications: updatedMedications });
   };
 
   const handleNotificationChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await updateProfile({ preferences: { ...user.profile.preferences, notifications: e.target.checked } });
+    if (user.profile) {
+      await updateProfile({ preferences: { ...user.profile.preferences, notifications: e.target.checked } });
+    }
   };
 
   const handleDataSharingChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await updateProfile({ preferences: { ...user.profile.preferences, dataSharing: e.target.checked } });
+    if (user.profile) {
+      await updateProfile({ preferences: { ...user.profile.preferences, dataSharing: e.target.checked } });
+    }
   };
 
   if (!user.profile) {
@@ -237,7 +243,7 @@ const ProfileContent: React.FC = () => {
                     </Button>
                   )}
                 </div>
-                
+
                 {section.content ? (
                   section.content
                 ) : (
@@ -300,7 +306,7 @@ const ProfileContent: React.FC = () => {
             <Shield className="w-5 h-5 text-gray-600" />
             Privacy Preferences
           </h2>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -313,11 +319,12 @@ const ProfileContent: React.FC = () => {
                   className="sr-only peer"
                   checked={profile.preferences.notifications}
                   onChange={handleNotificationChange}
+                  aria-label="Enable email notifications"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" aria-hidden="true"></div>
               </label>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">Data Sharing</p>
@@ -329,8 +336,9 @@ const ProfileContent: React.FC = () => {
                   className="sr-only peer"
                   checked={profile.preferences.dataSharing}
                   onChange={handleDataSharingChange}
+                  aria-label="Enable data sharing"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" aria-hidden="true"></div>
               </label>
             </div>
           </div>
