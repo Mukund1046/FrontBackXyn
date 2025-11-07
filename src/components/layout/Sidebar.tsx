@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../stores/useAppStore';
 import { cn } from '../../lib/utils';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
   MessageSquare,
   User,
@@ -22,6 +23,8 @@ export const Sidebar: React.FC = () => {
     setCurrentView,
     logout,
   } = useAppStore();
+
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   const navigation = [
     { name: 'Dashboard', icon: Home, id: 'dashboard' },
@@ -65,7 +68,7 @@ export const Sidebar: React.FC = () => {
       <motion.aside
         initial={false}
         animate={{
-          x: ui.sidebarOpen ? 0 : '-100%',
+          x: isDesktop ? 0 : (ui.sidebarOpen ? 0 : -100),
         }}
         transition={{
           type: 'spring',
