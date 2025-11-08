@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
+import { Tooltip } from '../ui/Tooltip';
 import { ChatStarters } from './ChatStarters';
+import { ChatHistoryDrawer } from './ChatHistoryDrawer';
+import { IncognitoToggle } from './IncognitoToggle';
 import { useAppStore } from '../../stores/useAppStore';
 import { useDocumentStore } from '../../stores/useDocumentStore';
 import { useChatDocumentStore } from '../../stores/useChatDocumentStore';
@@ -11,7 +14,7 @@ import { FeatureErrorBoundary } from '../error/FeatureErrorBoundary';
 import { DocumentAttachButton } from './DocumentAttachButton';
 import { ActiveDocumentsBadge } from './ActiveDocumentsBadge';
 import Markdown from 'markdown-to-jsx';
-import { Send, Bot, User, ArrowUp } from 'lucide-react';
+import { Send, Bot, User, ArrowUp, History } from 'lucide-react';
 
 // Define a specific type for profile updates to ensure type safety
 type ProfileUpdates = {
@@ -28,9 +31,13 @@ const ChatInterfaceContent: React.FC = () => {
     updateProfile,
     user,
     showNotification,
+    createNewSession,
+    addMessageToSession,
+    getCurrentSession,
   } = useAppStore();
 
   const [inputValue, setInputValue] = useState('');
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,6 +46,13 @@ const ChatInterfaceContent: React.FC = () => {
 
   // Import chat document store
   const { activeDocumentIds } = useChatDocumentStore();
+
+  // Initialize first session if none exists
+  useEffect(() => {
+    if (chat.sessions.length === 0 && !chat.currentSessionId) {
+      createNewSession();
+    }
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -133,7 +147,17 @@ const ChatInterfaceContent: React.FC = () => {
       timestamp: new Date(),
     };
 
-    addMessage(userMessage);
+    // Add to current session (or use legacy method for backward compatibility)
+    const currentSession = getCurrentSession();
+    if (currentSession && !chat.isIncognitoMode) {
+      addMessageToSession(currentSession.id, userMessage);
+    } else if (chat.isIncognitoMode) {
+      // For incognito mode, just add to messages without saving to sessions
+      addMessage(userMessage);
+    } else {
+      addMessage(userMessage);
+    }
+    
     updateUserChatPersonality(userMessage.content);
     setInputValue('');
     setLoading(true);
@@ -203,7 +227,13 @@ const ChatInterfaceContent: React.FC = () => {
         },
       };
 
-      addMessage(aiMessage);
+      // Add AI response to current session
+      const currentSession = getCurrentSession();
+      if (currentSession && !chat.isIncognitoMode) {
+        addMessageToSession(currentSession.id, aiMessage);
+      } else {
+        addMessage(aiMessage);
+      }
     } catch (error) {
       console.error('Chat error:', error);
       const errorMessage = {
@@ -212,7 +242,13 @@ const ChatInterfaceContent: React.FC = () => {
         type: 'ai' as const,
         timestamp: new Date(),
       };
-      addMessage(errorMessage);
+      
+      const currentSession = getCurrentSession();
+      if (currentSession && !chat.isIncognitoMode) {
+        addMessageToSession(currentSession.id, errorMessage);
+      } else {
+        addMessage(errorMessage);
+      }
     } finally {
       setLoading(false);
       inputRef.current?.focus();
@@ -236,26 +272,54 @@ const ChatInterfaceContent: React.FC = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="flex items-center gap-4">
-          <motion.div
-            className="w-11 h-11 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft"
-            role="img"
-            aria-label="AI Assistant avatar"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-          >
-            <Bot className="w-6 h-6 text-white" aria-hidden="true" />
-          </motion.div>
-          <div className="min-w-0">
-            <h2 className="text-h3 font-semibold text-gray-900">Xyn.ai Assistant</h2>
-            <p className="text-sm text-gray-600 mt-0.5">
-              {activeDocumentIds.length > 0 
-                ? `Analyzing ${activeDocumentIds.length} medical document${activeDocumentIds.length > 1 ? 's' : ''}`
-                : 'Your trusted Medicare health guide'}
-            </p>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0 flex-1">
+            <motion.div
+              className="w-11 h-11 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-soft"
+              role="img"
+              aria-label="AI Assistant avatar"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+            >
+              <Bot className="w-6 h-6 text-white" aria-hidden="true" />
+            </motion.div>
+            <div className="min-w-0">
+              <h2 className="text-h3 font-semibold text-gray-900">
+                Xyn.ai Assistant
+                {chat.isIncognitoMode && (
+                  <span className="ml-2 text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
+                    Private
+                  </span>
+                )}
+              </h2>
+              <p className="text-sm text-gray-600 mt-0.5">
+                {activeDocumentIds.length > 0 
+                  ? `Analyzing ${activeDocumentIds.length} medical document${activeDocumentIds.length > 1 ? 's' : ''}`
+                  : 'Your trusted Medicare health guide'}
+              </p>
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            <IncognitoToggle />
+            <Tooltip content="View all conversations and start new chats" position="bottom">
+              <motion.button
+                onClick={() => setIsHistoryOpen(true)}
+                className="p-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label="Open chat history"
+              >
+                <History className="w-5 h-5" aria-hidden="true" />
+              </motion.button>
+            </Tooltip>
           </div>
         </div>
       </motion.div>
+      
+      {/* Chat History Drawer */}
+      <ChatHistoryDrawer isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
 
       {/* Messages */}
       <div
@@ -464,13 +528,15 @@ const ChatInterfaceContent: React.FC = () => {
         <div ref={messagesEndRef} />
 
         {showScrollToTop && (
-          <Button
-            onClick={scrollToTop}
-            className="absolute bottom-4 right-4 rounded-full w-10 h-10 p-2 bg-blue-600 hover:bg-blue-700 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            aria-label="Scroll to top"
-          >
-            <ArrowUp className="w-6 h-6" aria-hidden="true" />
-          </Button>
+          <Tooltip content="Jump to the beginning of conversation" position="left">
+            <Button
+              onClick={scrollToTop}
+              className="absolute bottom-4 right-6 rounded-full w-10 h-10 p-2 bg-blue-600 hover:bg-blue-700 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Scroll to top"
+            >
+              <ArrowUp className="w-6 h-6" aria-hidden="true" />
+            </Button>
+          </Tooltip>
         )}
       </div>
 

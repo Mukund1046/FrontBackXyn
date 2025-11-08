@@ -4,6 +4,7 @@ import { Paperclip, Check, FileText, Upload } from 'lucide-react';
 import { useDocumentStore } from '../../stores/useDocumentStore';
 import { useChatDocumentStore } from '../../stores/useChatDocumentStore';
 import { useAppStore } from '../../stores/useAppStore';
+import { Tooltip } from '../ui/Tooltip';
 
 export const DocumentAttachButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,20 +42,26 @@ export const DocumentAttachButton: React.FC = () => {
     return `${nameWithoutExt.substring(0, maxLength - ext!.length - 4)}...${ext}`;
   };
 
+  const tooltipText = activeDocumentIds.length > 0
+    ? `${activeDocumentIds.length} document${activeDocumentIds.length > 1 ? 's' : ''} attached - Click to manage`
+    : 'Attach medical documents to provide context';
+
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 hover:bg-white border border-gray-200 transition-colors"
-        type="button"
-      >
-        <Paperclip className="w-4 h-4 text-gray-600" />
-        {activeDocumentIds.length > 0 && (
-          <span className="text-xs font-medium text-primary-600">
-            {activeDocumentIds.length}
-          </span>
-        )}
-      </button>
+      <Tooltip content={tooltipText} position="top">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 hover:bg-white border border-gray-200 transition-colors"
+          type="button"
+        >
+          <Paperclip className="w-4 h-4 text-gray-600" />
+          {activeDocumentIds.length > 0 && (
+            <span className="text-xs font-medium text-primary-600">
+              {activeDocumentIds.length}
+            </span>
+          )}
+        </button>
+      </Tooltip>
 
       <AnimatePresence>
         {isOpen && (

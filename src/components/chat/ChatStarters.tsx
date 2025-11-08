@@ -42,16 +42,16 @@ export const ChatStarters: React.FC<ChatStartersProps> = ({ setInputValue }) => 
   const isNewUser = chat.messages.length === 0;
 
   const newUsersStarters = [
-    'What Medicare plan is best for me?',
-    'How does Medicare Part D work?',
-    'I need help with prescription coverage',
-    'What are my out-of-pocket costs?',
+    'What symptoms should I watch for?',
+    'How do I manage chronic conditions?',
+    'Tell me about medication interactions',
+    'What preventive care do I need?',
   ];
 
   const starters = isNewUser ? newUsersStarters : getPersonalizedStarters();
 
   return (
-    <div className="text-left max-w-md mx-auto">
+    <div className="text-center max-w-2xl mx-auto">
       <motion.p
         className="text-sm font-semibold text-gray-700 mb-4"
         initial={{ opacity: 0 }}
@@ -60,7 +60,7 @@ export const ChatStarters: React.FC<ChatStartersProps> = ({ setInputValue }) => 
       >
         Try asking:
       </motion.p>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3 justify-center">
         {starters.map((starter, index) => (
           <motion.div
             key={index}

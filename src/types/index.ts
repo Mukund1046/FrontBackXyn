@@ -33,10 +33,23 @@ export interface ChatMessage {
   };
 }
 
-export interface ChatState {
+export interface ChatSession {
+  id: string;
+  title: string;
   messages: ChatMessage[];
+  createdAt: Date;
+  updatedAt: Date;
+  isIncognito: boolean;
+}
+
+export interface ChatState {
+  sessions: ChatSession[];
+  currentSessionId: string | null;
   isLoading: boolean;
   currentContext: string;
+  isIncognitoMode: boolean;
+  // Deprecated - kept for backward compatibility
+  messages: ChatMessage[];
   sessionId: string;
 }
 

@@ -4,6 +4,7 @@ import { useAppStore } from '../../stores/useAppStore';
 import { cn } from '../../lib/utils';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Logo } from '../ui/Logo';
+import { Tooltip } from '../ui/Tooltip';
 import {
   MessageSquare,
   User,
@@ -31,13 +32,13 @@ export const Sidebar: React.FC = () => {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   const navigation = [
-    { name: 'Dashboard', icon: Home, id: 'dashboard' },
-    { name: 'Chat with AI', icon: MessageSquare, id: 'chat' },
-    { name: 'My Profile', icon: User, id: 'profile' },
-    { name: 'Documents', icon: FileText, id: 'documents' },
-    { name: 'Medicare Plans', icon: Shield, id: 'plans' },
-    { name: 'Settings', icon: Settings, id: 'settings' },
-    { name: 'Help', icon: HelpCircle, id: 'help' },
+    { name: 'Dashboard', icon: Home, id: 'dashboard', tooltip: 'View your health overview and quick stats' },
+    { name: 'Chat with AI', icon: MessageSquare, id: 'chat', tooltip: 'Get instant medical guidance and advice' },
+    { name: 'My Profile', icon: User, id: 'profile', tooltip: 'Manage your health profile and information' },
+    { name: 'Documents', icon: FileText, id: 'documents', tooltip: 'Upload and manage medical documents' },
+    { name: 'Medicare Plans', icon: Shield, id: 'plans', tooltip: 'Explore and compare Medicare coverage options' },
+    { name: 'Settings', icon: Settings, id: 'settings', tooltip: 'Customize your app preferences' },
+    { name: 'Help', icon: HelpCircle, id: 'help', tooltip: 'Get support and contact assistance' },
   ];
 
   const handleNavClick = (viewId: string) => {
@@ -129,29 +130,33 @@ export const Sidebar: React.FC = () => {
 
             {/* Close button (mobile only) */}
             {!isDesktop && (
-              <motion.button
-                onClick={toggleSidebar}
-                className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
-                aria-label="Close sidebar"
-                aria-expanded={ui.sidebarOpen}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <X className="w-5 h-5 text-gray-600" aria-hidden="true" />
-              </motion.button>
+              <Tooltip content="Close navigation menu" position="bottom">
+                <motion.button
+                  onClick={toggleSidebar}
+                  className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                  aria-label="Close sidebar"
+                  aria-expanded={ui.sidebarOpen}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <X className="w-5 h-5 text-gray-600" aria-hidden="true" />
+                </motion.button>
+              </Tooltip>
             )}
 
             {/* Collapse button (desktop only) */}
             {isDesktop && !ui.sidebarCollapsed && (
-              <motion.button
-                onClick={toggleSidebarCollapse}
-                className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
-                aria-label="Collapse sidebar"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-600" aria-hidden="true" />
-              </motion.button>
+              <Tooltip content="Minimize sidebar to icons only" position="bottom">
+                <motion.button
+                  onClick={toggleSidebarCollapse}
+                  className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                  aria-label="Collapse sidebar"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-600" aria-hidden="true" />
+                </motion.button>
+              </Tooltip>
             )}
           </motion.div>
 
@@ -218,7 +223,7 @@ export const Sidebar: React.FC = () => {
                   )}
                   aria-current={isActive ? 'page' : undefined}
                   aria-label={item.name}
-                  title={ui.sidebarCollapsed ? item.name : undefined}
+                  title={ui.sidebarCollapsed ? item.tooltip : undefined}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 + index * 0.05 }}
@@ -268,15 +273,17 @@ export const Sidebar: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <motion.button
-                onClick={toggleSidebarCollapse}
-                className="w-full flex items-center justify-center p-2.5 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                aria-label="Expand sidebar"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ChevronRight className="w-5 h-5 text-gray-500" aria-hidden="true" />
-              </motion.button>
+              <Tooltip content="Expand sidebar to full width" position="right">
+                <motion.button
+                  onClick={toggleSidebarCollapse}
+                  className="w-full flex items-center justify-center p-2.5 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  aria-label="Expand sidebar"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ChevronRight className="w-5 h-5 text-gray-500" aria-hidden="true" />
+                </motion.button>
+              </Tooltip>
             </motion.div>
           )}
 
@@ -312,16 +319,17 @@ export const Sidebar: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <motion.button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center p-2.5 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
-                aria-label="Sign out"
-                title="Sign out"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <LogOut className="w-5 h-5 text-gray-500" aria-hidden="true" />
-              </motion.button>
+              <Tooltip content="Sign out of your account" position="right">
+                <motion.button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center p-2.5 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  aria-label="Sign out"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <LogOut className="w-5 h-5 text-gray-500" aria-hidden="true" />
+                </motion.button>
+              </Tooltip>
             </motion.div>
           )}
         </div>

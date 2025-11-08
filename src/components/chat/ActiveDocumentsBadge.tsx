@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText } from 'lucide-react';
 import { useDocumentStore } from '../../stores/useDocumentStore';
 import { useChatDocumentStore } from '../../stores/useChatDocumentStore';
+import { Tooltip } from '../ui/Tooltip';
 
 export const ActiveDocumentsBadge: React.FC = () => {
   const { documents } = useDocumentStore();
@@ -65,13 +66,15 @@ export const ActiveDocumentsBadge: React.FC = () => {
                   <span className="text-xs font-medium text-gray-700 truncate max-w-[120px]">
                     {truncateName(doc.name)}
                   </span>
-                  <button
-                    onClick={() => removeDocument(doc.id)}
-                    className="flex-shrink-0 p-0.5 hover:bg-gray-100 rounded transition-colors"
-                    aria-label={`Remove ${doc.name} from context`}
-                  >
-                    <X className="w-3 h-3 text-gray-500 hover:text-red-600" />
-                  </button>
+                  <Tooltip content={`Remove ${truncateName(doc.name, 30)} from chat context`} position="top">
+                    <button
+                      onClick={() => removeDocument(doc.id)}
+                      className="flex-shrink-0 p-0.5 hover:bg-gray-100 rounded transition-colors"
+                      aria-label={`Remove ${doc.name} from context`}
+                    >
+                      <X className="w-3 h-3 text-gray-500 hover:text-red-600" />
+                    </button>
+                  </Tooltip>
                 </motion.div>
               ))}
             </AnimatePresence>

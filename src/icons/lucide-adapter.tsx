@@ -104,5 +104,7 @@ export const Users = makeIcon('users');
 export const Video = makeIcon('video');
 export const X = makeIcon('delete-x');
 export const XCircle = makeIcon('delete-x');
+export const History = makeIcon('timeline-vertical');
+export const EyeOff = makeIcon('eye');
 
 export type { LucideProps as IconProps, LucideIcon as IconType };

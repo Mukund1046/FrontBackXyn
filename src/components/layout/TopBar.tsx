@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../stores/useAppStore';
 import { Menu, Bell, Search } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { Tooltip } from '../ui/Tooltip';
 import { useState } from 'react';
 import { useSearch } from '../../hooks/useSearch';
 
@@ -38,21 +39,23 @@ export const TopBar: React.FC = () => {
       transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
     >
       <div className="flex items-center gap-4 min-w-0 flex-1">
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSidebar}
-            className="lg:hidden"
-            aria-label="Toggle sidebar"
-            aria-expanded={ui.sidebarOpen}
+        <Tooltip content="Open navigation menu" position="bottom">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Menu className="w-5 h-5" aria-hidden="true" />
-          </Button>
-        </motion.div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSidebar}
+              className="lg:hidden"
+              aria-label="Toggle sidebar"
+              aria-expanded={ui.sidebarOpen}
+            >
+              <Menu className="w-5 h-5" aria-hidden="true" />
+            </Button>
+          </motion.div>
+        </Tooltip>
 
         <div className="flex items-center gap-4 min-w-0">
           <motion.h1
@@ -152,28 +155,33 @@ export const TopBar: React.FC = () => {
         </div>
 
         {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="sm"
-          aria-label="View notifications"
-          aria-expanded="false"
-        >
-          <Bell className="w-5 h-5" aria-hidden="true" />
-        </Button>
+        <Tooltip content="View notifications and updates" position="bottom">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="View notifications"
+            aria-expanded="false"
+          >
+            <Bell className="w-5 h-5" aria-hidden="true" />
+          </Button>
+        </Tooltip>
 
         {/* Profile Avatar */}
-        <motion.div
-          className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-subtle cursor-pointer"
-          role="img"
-          aria-label={`${user.profile?.firstName} ${user.profile?.lastName}'s profile avatar`}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-        >
-          <span className="text-white font-semibold text-sm" aria-hidden="true">
-            {user.profile?.firstName?.[0]}{user.profile?.lastName?.[0]}
-          </span>
-        </motion.div>
+        <Tooltip content="View your profile and account settings" position="bottom">
+          <motion.div
+            className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center shadow-subtle cursor-pointer"
+            role="img"
+            aria-label={`${user.profile?.firstName} ${user.profile?.lastName}'s profile avatar`}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+            onClick={() => setCurrentView('profile')}
+          >
+            <span className="text-white font-semibold text-sm" aria-hidden="true">
+              {user.profile?.firstName?.[0]}{user.profile?.lastName?.[0]}
+            </span>
+          </motion.div>
+        </Tooltip>
       </div>
     </motion.header>
   );
