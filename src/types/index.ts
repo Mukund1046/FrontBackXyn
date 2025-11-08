@@ -72,6 +72,7 @@ export interface AppState {
   ui: {
     theme: 'light' | 'dark';
     sidebarOpen: boolean;
+    sidebarCollapsed: boolean;
     currentView: string;
     notification: Notification | null;
   };

@@ -36,8 +36,26 @@ export const MainLayout: React.FC = () => {
     }
   };
 
+  const mainContent = (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={ui.currentView}
+        className={ui.currentView === 'chat' ? 'h-full' : ''}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{
+          duration: 0.3,
+          ease: [0.4, 0, 0.2, 1]
+        }}
+      >
+        {renderCurrentView()}
+      </motion.div>
+    </AnimatePresence>
+  );
+
   return (
-    <div className="h-screen bg-gray-50 flex font-sans overflow-hidden">
+    <div className="h-screen bg-gray-50 flex font-sans">
       {/* Skip to main content link */}
       <a
         href="#main-content"
@@ -48,26 +66,17 @@ export const MainLayout: React.FC = () => {
 
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-10">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header className="sticky top-0 z-10 flex-shrink-0">
           <TopBar />
         </header>
 
-        <main id="main-content" className="flex-1 overflow-y-auto scrollbar-thin" role="main">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={ui.currentView}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{
-                duration: 0.3,
-                ease: [0.4, 0, 0.2, 1]
-              }}
-            >
-              {renderCurrentView()}
-            </motion.div>
-          </AnimatePresence>
+        <main 
+          id="main-content" 
+          className={`flex-1 ${ui.currentView === 'chat' ? 'overflow-hidden' : 'overflow-y-auto'}`} 
+          role="main"
+        >
+          {mainContent}
         </main>
       </div>
       <Notification />

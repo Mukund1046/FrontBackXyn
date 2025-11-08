@@ -17,6 +17,7 @@ interface AppStore extends AppState {
   
   // UI actions
   toggleSidebar: () => void;
+  toggleSidebarCollapse: () => void;
   setCurrentView: (view: string) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   showNotification: (notification: Omit<Notification, 'id'>) => void;
@@ -95,6 +96,7 @@ export const useAppStore = create<AppStore>()(
       ui: {
         theme: 'light',
         sidebarOpen: false,
+        sidebarCollapsed: false,
         currentView: 'dashboard',
         notification: null,
       },
@@ -143,6 +145,7 @@ export const useAppStore = create<AppStore>()(
           ui: {
             theme: 'light',
             sidebarOpen: false,
+            sidebarCollapsed: false,
             currentView: 'dashboard',
             notification: null,
           },
@@ -187,6 +190,11 @@ export const useAppStore = create<AppStore>()(
       toggleSidebar: () =>
         set((state) => ({
           ui: { ...state.ui, sidebarOpen: !state.ui.sidebarOpen },
+        })),
+
+      toggleSidebarCollapse: () =>
+        set((state) => ({
+          ui: { ...state.ui, sidebarCollapsed: !state.ui.sidebarCollapsed },
         })),
 
       setCurrentView: (view) =>

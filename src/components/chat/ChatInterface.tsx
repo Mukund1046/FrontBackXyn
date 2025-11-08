@@ -4,11 +4,14 @@ import { Button } from '../ui/Button';
 import { ChatStarters } from './ChatStarters';
 import { useAppStore } from '../../stores/useAppStore';
 import { useDocumentStore } from '../../stores/useDocumentStore';
+import { useChatDocumentStore } from '../../stores/useChatDocumentStore';
 import { getMedicalChatResponse } from '../../lib/backend-api';
 import { generateId } from '../../lib/utils';
 import { FeatureErrorBoundary } from '../error/FeatureErrorBoundary';
+import { DocumentAttachButton } from './DocumentAttachButton';
+import { ActiveDocumentsBadge } from './ActiveDocumentsBadge';
 import Markdown from 'markdown-to-jsx';
-import { Send, Bot, User, ArrowUp, Paperclip } from 'lucide-react';
+import { Send, Bot, User, ArrowUp } from 'lucide-react';
 
 // Define a specific type for profile updates to ensure type safety
 type ProfileUpdates = {
@@ -30,10 +33,12 @@ const ChatInterfaceContent: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+  // Import chat document store
+  const { activeDocumentIds } = useChatDocumentStore();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -139,20 +144,58 @@ const ChatInterfaceContent: React.FC = () => {
         content: msg.content,
       }));
 
-      const documentKeywords = documents.flatMap(doc => doc.extractedKeywords || []);
+      console.log('Chat history being sent:', chatHistory);
+      console.log('User message:', userMessage.content);
+
+      // Get only ACTIVE documents (selected by user)
+      const activeDocuments = documents.filter(
+        doc => activeDocumentIds.includes(doc.id) && doc.isParsed
+      );
+
+      // Get document keywords and full context from active documents only
+      const documentKeywords = activeDocuments.flatMap(doc => doc.extractedKeywords || []);
+      const documentContext = activeDocuments
+        .map(doc => {
+          if (doc.parsedText) {
+            return `Document: ${doc.name}\n${doc.parsedText}`;
+          }
+          return '';
+        })
+        .filter(text => text.length > 0)
+        .join('\n\n---\n\n');
+
+      console.log('Active documents:', activeDocuments.length);
+      console.log('Document context length:', documentContext.length);
+      console.log('Document keywords:', documentKeywords);
 
       const medicalResponse = await getMedicalChatResponse(
         userMessage.content,
         chatHistory,
         user.profile?.chatPersonality,
-        documentKeywords
+        documentKeywords,
+        documentContext
       );
+
+      console.log('Received response:', medicalResponse);
 
       handleProfileUpdateFromChat(medicalResponse.extracted_info);
 
+      // Handle both text and structured responses
+      let responseContent = '';
+      if (medicalResponse.response_type === 'structured' && medicalResponse.structured_content) {
+        // Convert structured content to readable text
+        const structured = medicalResponse.structured_content;
+        responseContent = `${structured.title}\n\n${structured.summary}\n\n`;
+        structured.options.forEach((option: any, index: number) => {
+          responseContent += `${index + 1}. **${option.name}**\n${option.details}\n\n`;
+        });
+      } else {
+        responseContent = medicalResponse.text_content || 'I apologize, but I could not generate a response.';
+      }
+
       const aiMessage = {
         id: generateId(),
-        content: medicalResponse.text_content,
+        content: responseContent,
         type: 'ai' as const,
         timestamp: new Date(),
         metadata: {
@@ -185,10 +228,10 @@ const ChatInterfaceContent: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-h-full overflow-hidden max-h-full overflow-hidden">
       {/* Chat Header */}
       <motion.div
-        className="border-b border-gray-200/80 p-5 bg-white/50 backdrop-blur-sm"
+        className="border-b border-gray-200/80 p-5 bg-white/50 backdrop-blur-sm flex-shrink-0"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -205,7 +248,11 @@ const ChatInterfaceContent: React.FC = () => {
           </motion.div>
           <div className="min-w-0">
             <h2 className="text-h3 font-semibold text-gray-900">Xyn.ai Assistant</h2>
-            <p className="text-sm text-gray-600 mt-0.5">Your trusted Medicare health guide</p>
+            <p className="text-sm text-gray-600 mt-0.5">
+              {activeDocumentIds.length > 0 
+                ? `Analyzing ${activeDocumentIds.length} medical document${activeDocumentIds.length > 1 ? 's' : ''}`
+                : 'Your trusted Medicare health guide'}
+            </p>
           </div>
         </div>
       </motion.div>
@@ -214,6 +261,7 @@ const ChatInterfaceContent: React.FC = () => {
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4 relative scrollbar-thin bg-gray-50/50"
+        data-lenis-prevent
         role="log"
         aria-label="Chat messages"
         aria-live="polite"
@@ -428,12 +476,18 @@ const ChatInterfaceContent: React.FC = () => {
 
       {/* Input Form */}
       <motion.div
-        className="border-t border-gray-200/80 p-4 lg:p-5 bg-white/80 backdrop-blur-sm"
+        className="border-t border-gray-200/80 p-4 lg:p-5 bg-white/80 backdrop-blur-sm flex-shrink-0"
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.2 }}
       >
-        <form onSubmit={handleSendMessage} className="flex gap-3 items-center max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto">
+          {/* Active Documents Badge */}
+          <AnimatePresence>
+            {activeDocumentIds.length > 0 && <ActiveDocumentsBadge />}
+          </AnimatePresence>
+
+          <form onSubmit={handleSendMessage} className="flex gap-3 items-center">
           <label htmlFor="chat-input" className="sr-only">
             Type your message
           </label>
@@ -455,31 +509,9 @@ const ChatInterfaceContent: React.FC = () => {
               aria-describedby={chat.isLoading ? "chat-loading" : undefined}
             />
           </motion.div>
-          <input
-            type="file"
-            id="file-input"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept=".pdf,.png,.jpg,.jpeg"
-            aria-label="Upload file"
-          />
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Button
-              type="button"
-              size="md"
-              variant="ghost"
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-full w-11 h-11 p-0"
-              aria-label="Upload file"
-              disabled={chat.isLoading}
-            >
-              <Paperclip className="w-5 h-5" aria-hidden="true" />
-            </Button>
-          </motion.div>
+
+          {/* Document Attach Button */}
+          <DocumentAttachButton />
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -501,6 +533,7 @@ const ChatInterfaceContent: React.FC = () => {
             </span>
           )}
         </form>
+        </div>
       </motion.div>
     </div>
   );

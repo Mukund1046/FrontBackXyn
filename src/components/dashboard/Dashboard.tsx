@@ -176,18 +176,18 @@ const DashboardContent: React.FC = () => {
           >
             <div className="space-y-4">
               <h1 className="text-h1 font-semibold">
-                <span className="block text-h1 font-semibold tracking-tight">Good morning,</span>
+                <span className="block text-h1 font-semibold tracking-tight">Welcome back,</span>
                 <span className="block tracking-tight mt-1">
                   <span>{user.profile?.firstName || 'there'}</span>
                   <span className="ml-1">!</span>
                 </span>
               </h1>
               <p className="text-lg text-white/90 max-w-xl">
-                Let's continue building your personalized Medicare profile with trusted AI guidance.
+                Your trusted Medicare companion is here to help. Let's find the perfect plan for you.
               </p>
             </div>
             <motion.div
-              className="hidden md:flex"
+              className="hidden md:flex relative z-0"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{

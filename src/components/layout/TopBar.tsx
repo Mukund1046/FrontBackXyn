@@ -32,7 +32,7 @@ export const TopBar: React.FC = () => {
 
   return (
     <motion.header
-      className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 h-16 flex items-center justify-between px-4 lg:px-6 font-sans sticky top-0 z-30 shadow-subtle"
+      className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 h-16 flex items-center justify-between px-4 lg:px-6 font-sans sticky top-0 z-50 shadow-subtle"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
@@ -64,17 +64,6 @@ export const TopBar: React.FC = () => {
           >
             {getViewTitle()}
           </motion.h1>
-          {user.profile && (
-            <motion.div
-              className="hidden sm:flex items-center gap-2 text-gray-600"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <span className="text-body-medium text-gray-500">Welcome back,</span>
-              <span className="text-body-medium font-semibold text-gray-900">{user.profile.firstName}</span>
-            </motion.div>
-          )}
         </div>
       </div>
 
@@ -103,7 +92,7 @@ export const TopBar: React.FC = () => {
                 <motion.div
                   id="search-results"
                   role="listbox"
-                  className="absolute z-10 w-full bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-elevated mt-2 p-2 max-h-60 overflow-y-auto scrollbar-thin"
+                  className="absolute z-[60] w-full bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-elevated mt-2 p-2 max-h-60 overflow-y-auto scrollbar-thin"
                   aria-label="Search results"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -149,7 +138,7 @@ export const TopBar: React.FC = () => {
                 <motion.div
                   role="status"
                   aria-live="polite"
-                  className="absolute z-10 w-full bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-elevated mt-2 p-4"
+                  className="absolute z-[60] w-full bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-elevated mt-2 p-4"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}

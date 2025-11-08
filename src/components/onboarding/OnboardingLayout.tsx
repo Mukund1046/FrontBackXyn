@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card } from '../ui/Card';
+import { Logo } from '../ui/Logo';
 import { useAppStore } from '../../stores/useAppStore';
 
 interface OnboardingLayoutProps {
@@ -46,13 +47,9 @@ export const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
         <Card className="text-center">
           {/* Logo */}
           <div className="mb-8">
-            <div
-              className="w-16 h-16 rounded-2xl mx-auto mb-4 bg-white bg-no-repeat bg-center bg-cover"
-              style={{
-                backgroundImage:
-                  'url(https://cdn.builder.io/api/v1/image/assets/b2ba2d7a34e5494f9b240da4d345e30f/2e08e42960c143f890de053098bc43b6)',
-              }}
-            />
+            <div className="mx-auto mb-4 flex justify-center">
+              <Logo size="lg" />
+            </div>
             <h1
               className="text-h1 font-semibold text-gray-900 mb-2"
             >

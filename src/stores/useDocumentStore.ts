@@ -1,14 +1,17 @@
 import { create } from 'zustand';
 
-interface Document {
+export interface Document {
   id: string;
   name: string;
   type: string;
   data: ArrayBuffer;
   extractedKeywords?: string[];
+  parsedText?: string;
+  isParsed?: boolean;
+  parsedAt?: Date;
 }
 
-interface DocumentStore {
+export interface DocumentStore {
   documents: Document[];
   addDocument: (file: File) => Promise<void>;
   deleteDocument: (id: string) => Promise<void>;
