@@ -44,7 +44,7 @@ const openDB = () => {
   });
 };
 
-export const useDocumentStore = create<DocumentStore>((set, get) => ({
+export const useDocumentStore = create<DocumentStore>((set) => ({
   documents: [],
 
   loadDocuments: async () => {
@@ -73,7 +73,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
             type: file.type,
             data: reader.result as ArrayBuffer,
           };
-          const request = store.add(document);
+          store.add(document);
 
           transaction.oncomplete = () => {
             set((state) => ({ documents: [...state.documents, document] }));

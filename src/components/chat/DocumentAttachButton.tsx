@@ -25,7 +25,7 @@ export const DocumentAttachButton: React.FC = () => {
       await addDocument(files[0]);
       showNotification('Document uploaded successfully! It will be parsed automatically.', 'success');
       setIsOpen(false);
-    } catch (error) {
+    } catch {
       showNotification('Failed to upload document', 'error');
     }
 

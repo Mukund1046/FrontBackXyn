@@ -1,6 +1,6 @@
-export function extractHealthInfo(aiResponse: string): Record<string, any> {
+export function extractHealthInfo(aiResponse: string): Record<string, string[]> {
   // Simple extraction logic - in production, this would be more sophisticated
-  const healthInfo: Record<string, any> = {};
+  const healthInfo: Record<string, string[]> = {};
   
   // Extract medications mentioned
   const medicationPatterns = /(?:taking|prescribed|medication|drug)\s+([A-Za-z]+)/gi;

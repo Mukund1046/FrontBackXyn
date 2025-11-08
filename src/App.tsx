@@ -1,6 +1,5 @@
 import React from 'react';
 import { useAppStore } from './stores/useAppStore';
-import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
 import { MainLayout } from './components/layout/MainLayout';
 import { ErrorBoundary } from './components/error/ErrorBoundary';
 

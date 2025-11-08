@@ -17,6 +17,7 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
+  Brain,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -34,6 +35,7 @@ export const Sidebar: React.FC = () => {
   const navigation = [
     { name: 'Dashboard', icon: Home, id: 'dashboard', tooltip: 'View your health overview and quick stats' },
     { name: 'Chat with AI', icon: MessageSquare, id: 'chat', tooltip: 'Get instant medical guidance and advice' },
+    { name: 'Cognitive Games', icon: Brain, id: 'cognitive-games', tooltip: 'Brain training and therapy exercises' },
     { name: 'My Profile', icon: User, id: 'profile', tooltip: 'Manage your health profile and information' },
     { name: 'Documents', icon: FileText, id: 'documents', tooltip: 'Upload and manage medical documents' },
     { name: 'Medicare Plans', icon: Shield, id: 'plans', tooltip: 'Explore and compare Medicare coverage options' },
@@ -52,9 +54,6 @@ export const Sidebar: React.FC = () => {
   const handleLogout = () => {
     logout();
   };
-
-  const sidebarWidth = ui.sidebarCollapsed ? 'w-20' : 'w-64';
-  const isVisible = isDesktop || ui.sidebarOpen;
 
   return (
     <>

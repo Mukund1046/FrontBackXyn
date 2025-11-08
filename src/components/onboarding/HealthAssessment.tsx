@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { OnboardingLayout } from './OnboardingLayout';
-import { LoadingSpinner } from '../ui/LoadingSpinner';
+
 import { useAppStore } from '../../stores/useAppStore';
 import { Plus, X } from 'lucide-react';
 

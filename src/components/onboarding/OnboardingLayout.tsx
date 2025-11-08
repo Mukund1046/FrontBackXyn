@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '../ui/Card';
 import { Logo } from '../ui/Logo';
-import { useAppStore } from '../../stores/useAppStore';
+
 
 interface OnboardingLayoutProps {
   children: React.ReactNode;

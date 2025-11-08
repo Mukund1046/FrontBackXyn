@@ -9,7 +9,7 @@ export const DocumentManager: React.FC = () => {
   const { documents, deleteDocument, updateDocument } = useDocumentStore();
   const { addDocument: addToChatContext } = useChatDocumentStore();
 
-  const handleParse = async (doc: any) => {
+  const handleParse = async (doc: { id: string; isParsed?: boolean; name: string }) => {
     // Check if already parsed
     if (doc.isParsed) {
       const reparsed = confirm('This document is already parsed. Do you want to parse it again?');

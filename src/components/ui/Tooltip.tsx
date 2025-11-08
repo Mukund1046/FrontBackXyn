@@ -26,7 +26,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   useEffect(() => {
     if (isVisible && tooltipRef.current && wrapperRef.current) {
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
-      const wrapperRect = wrapperRef.current.getBoundingClientRect();
+      // const wrapperRect = wrapperRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       

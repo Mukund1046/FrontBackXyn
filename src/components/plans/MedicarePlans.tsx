@@ -122,7 +122,7 @@ const MedicarePlansContent: React.FC = () => {
 
   // Filter and sort plans
   useEffect(() => {
-    let filtered = plans.filter(plan => {
+    const filtered = plans.filter(plan => {
       const matchesSearch = plan.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = selectedType === 'all' || plan.type === selectedType;
       return matchesSearch && matchesType;
@@ -130,7 +130,7 @@ const MedicarePlansContent: React.FC = () => {
 
     // Sort plans
     filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
+      let aValue: number | string, bValue: number | string;
       
       switch (sortBy) {
         case 'rating':
@@ -249,7 +249,7 @@ const MedicarePlansContent: React.FC = () => {
             <div className="flex gap-2">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'rating' | 'premium' | 'name')}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 {sortOptions.map(option => (

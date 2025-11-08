@@ -11,16 +11,28 @@ import { MedicarePlans } from '../plans/MedicarePlans';
 import { HelpSupport } from '../help/HelpSupport';
 import { Notification } from '../ui/Notification';
 import { DocumentManager } from '../documents/DocumentManager';
+import { CognitiveGames } from '../../pages/CognitiveGames';
+import { GamePlayer } from '../games/GamePlayer';
 
 export const MainLayout: React.FC = () => {
   const { ui } = useAppStore();
+  
+  // Ensure currentView is always defined
+  const currentView = ui?.currentView || 'dashboard';
 
   const renderCurrentView = () => {
-    switch (ui.currentView) {
+    // Check if it's a game view
+    if (currentView.startsWith('game:')) {
+      return <GamePlayer />;
+    }
+
+    switch (currentView) {
       case 'dashboard':
         return <Dashboard />;
       case 'chat':
         return <ChatInterface />;
+      case 'cognitive-games':
+        return <CognitiveGames />;
       case 'profile':
         return <Profile />;
       case 'settings':
@@ -39,8 +51,8 @@ export const MainLayout: React.FC = () => {
   const mainContent = (
     <AnimatePresence mode="wait">
       <motion.div
-        key={ui.currentView}
-        className={ui.currentView === 'chat' ? 'h-full' : ''}
+        key={currentView}
+        className={currentView === 'chat' ? 'h-full' : ''}
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
@@ -73,7 +85,7 @@ export const MainLayout: React.FC = () => {
 
         <main 
           id="main-content" 
-          className={`flex-1 ${ui.currentView === 'chat' ? 'overflow-hidden' : 'overflow-y-auto'}`} 
+          className={`flex-1 ${currentView === 'chat' ? 'overflow-hidden' : 'overflow-y-auto'}`} 
           role="main"
         >
           {mainContent}

@@ -23,10 +23,7 @@ interface ChatMessage {
   content: string;
 }
 
-interface SymptomLog {
-  symptom_text: string;
-  log_type?: string;
-}
+
 
 export async function generateGameSuggestions(symptomText: string): Promise<GameConcept[]> {
   const response = await fetch(`${API_BASE_URL}/games/generate-suggestions`, {
@@ -79,7 +76,7 @@ export async function getMedicalChatResponse(
   chatPersonality?: { averageMessageLength: number },
   documentKeywords?: string[],
   documentContext?: string
-): Promise<{ text_content: string; extracted_info: any }> {
+): Promise<{ text_content: string; extracted_info: Record<string, unknown> }> {
   
   let enhancedPrompt = message;
   
@@ -136,7 +133,7 @@ export async function getMedicalChatResponse(
       console.error('Backend error response:', errorData);
       errorDetails = JSON.stringify(errorData, null, 2);
       errorMessage = errorData.detail || errorDetails;
-    } catch (e) {
+    } catch {
       const errorText = await response.text();
       console.error('Backend raw error:', errorText);
       errorDetails = errorText;

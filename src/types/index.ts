@@ -29,7 +29,7 @@ export interface ChatMessage {
     context?: string;
     sources?: string[];
     confidence?: number;
-    extracted_info?: Record<string, any>;
+    extracted_info?: Record<string, unknown>;
   };
 }
 

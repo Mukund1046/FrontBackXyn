@@ -424,10 +424,10 @@ export const useAppStore = create<AppStore>()(
     {
       name: 'xynai-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         // Migration for v0 -> v1: Convert old message array to sessions
         if (version === 0) {
-          const state = persistedState as any;
+          const state = persistedState as Record<string, unknown>;
           
           // If old data has messages array but no sessions
           if (state.chat && Array.isArray(state.chat.messages) && state.chat.messages.length > 0 && !Array.isArray(state.chat.sessions)) {

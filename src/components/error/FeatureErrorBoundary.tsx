@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
-import { AlertTriangle, RefreshCw, MessageSquare, Home, User, HelpCircle } from 'lucide-react';
+import { RefreshCw, MessageSquare, Home, User, HelpCircle } from 'lucide-react';
 
 interface Props {
   children: ReactNode;

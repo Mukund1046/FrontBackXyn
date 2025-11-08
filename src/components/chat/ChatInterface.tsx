@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/Tooltip';
@@ -30,7 +30,6 @@ const ChatInterfaceContent: React.FC = () => {
     setLoading,
     updateProfile,
     user,
-    showNotification,
     createNewSession,
     addMessageToSession,
     getCurrentSession,
@@ -52,7 +51,7 @@ const ChatInterfaceContent: React.FC = () => {
     if (chat.sessions.length === 0 && !chat.currentSessionId) {
       createNewSession();
     }
-  }, []);
+  }, [chat.sessions.length, chat.currentSessionId, createNewSession]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -101,15 +100,7 @@ const ChatInterfaceContent: React.FC = () => {
     });
   };
 
-  const { addDocument, documents } = useDocumentStore();
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      addDocument(file);
-      showNotification({ message: `File "${file.name}" uploaded successfully.`, type: 'success' });
-    }
-  };
+  const { documents } = useDocumentStore();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleProfileUpdateFromChat = (extractedInfo: any) => {
@@ -210,6 +201,7 @@ const ChatInterfaceContent: React.FC = () => {
         // Convert structured content to readable text
         const structured = medicalResponse.structured_content;
         responseContent = `${structured.title}\n\n${structured.summary}\n\n`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         structured.options.forEach((option: any, index: number) => {
           responseContent += `${index + 1}. **${option.name}**\n${option.details}\n\n`;
         });

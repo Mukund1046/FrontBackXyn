@@ -56,7 +56,7 @@ export function isValidApiKeyFormat(apiKey: string): boolean {
 }
 
 // Debug logging utility
-export function debugLog(message: string, data?: any) {
+export function debugLog(message: string, data?: unknown) {
   if (config.features.debugLogging) {
     console.log(`[XynWrapper Debug] ${message}`, data || '');
   }

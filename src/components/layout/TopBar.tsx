@@ -13,11 +13,38 @@ export const TopBar: React.FC = () => {
   const searchResults = useSearch(searchQuery);
 
   const getViewTitle = () => {
-    switch (ui.currentView) {
+    const currentView = ui?.currentView || 'dashboard';
+    
+    // Check if it's a game view
+    if (currentView.startsWith('game:')) {
+      const gameType = currentView.replace('game:', '');
+      const gameNames: Record<string, string> = {
+        'breathing_exercise': '🫁 Mindful Breathing',
+        'echo_grove': '🔊 Echo Grove',
+        'grounding_technique': '🎨 Grounding Colors',
+        'go_nogo': '⚡ Go/No-Go Challenge',
+        'task_switching': '🔄 Task Switcher',
+        'growth_path': '📈 Growth Path',
+        'reaction_time': '⏱️ Reaction Time Test',
+        'pattern_recognition': '🧩 Pattern Recognition',
+        'journaling': '📔 Positive Journal',
+        'stroop_test': '🌈 Stroop Test',
+        'target_tracker': '🎯 Target Tracker',
+        'memory_sequence': '🎨 Memory Sequence',
+        'card_matching': '🎴 Card Matching',
+        'memory_blossoms': '🌸 Memory Blossoms',
+        'social_cognition': '😊 Emotion Explorer',
+      };
+      return gameNames[gameType] || 'Game';
+    }
+    
+    switch (currentView) {
       case 'dashboard':
         return 'Dashboard';
       case 'chat':
         return 'AI Assistant';
+      case 'cognitive-games':
+        return 'Cognitive Games';
       case 'profile':
         return 'My Profile';
       case 'settings':
@@ -26,6 +53,8 @@ export const TopBar: React.FC = () => {
         return 'Medicare Plans';
       case 'help':
         return 'Help & Support';
+      case 'documents':
+        return 'Documents';
       default:
         return 'Dashboard';
     }
@@ -107,7 +136,7 @@ export const TopBar: React.FC = () => {
                       key={result.id}
                       role="option"
                       tabIndex={0}
-                      className="p-3 hover:bg-gray-50 cursor-pointer rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                      className="p-3 hover:bg-gradient-to-r hover:from-primary-50 hover:to-purple-50 cursor-pointer rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all group"
                       onClick={() => {
                         if (result.action) {
                           result.action();
@@ -131,8 +160,26 @@ export const TopBar: React.FC = () => {
                       transition={{ delay: index * 0.05 }}
                       whileHover={{ x: 4 }}
                     >
-                      <p className="font-medium text-gray-900 text-sm">{result.title}</p>
-                      <p className="text-xs text-gray-600 mt-0.5">{result.description}</p>
+                      <div className="flex items-start gap-3">
+                        {result.icon && (
+                          <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">
+                            {result.icon}
+                          </span>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-gray-900 text-sm truncate group-hover:text-primary-700 transition-colors">
+                              {result.title}
+                            </p>
+                            {result.category && (
+                              <span className="text-xs px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full font-medium flex-shrink-0">
+                                {result.category}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{result.description}</p>
+                        </div>
+                      </div>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -141,13 +188,17 @@ export const TopBar: React.FC = () => {
                 <motion.div
                   role="status"
                   aria-live="polite"
-                  className="absolute z-[60] w-full bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-elevated mt-2 p-4"
+                  className="absolute z-[60] w-full bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-elevated mt-2 p-6"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <p className="text-sm text-gray-500">No results found for "{searchQuery}"</p>
+                  <div className="text-center space-y-2">
+                    <p className="text-2xl">🔍</p>
+                    <p className="text-sm font-medium text-gray-700">No results found</p>
+                    <p className="text-xs text-gray-500">Try searching for games, pages, or chat history</p>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

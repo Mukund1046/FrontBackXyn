@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { LoadingSpinner, SkeletonCard, SkeletonText } from '../ui/LoadingSpinner';
+
 import { useAppStore } from '../../stores/useAppStore';
 import { FeatureErrorBoundary } from '../error/FeatureErrorBoundary';
 import {
@@ -27,9 +27,6 @@ const ProfileContent: React.FC = () => {
   const [editedFirstName, setEditedFirstName] = useState(user.profile?.firstName || '');
   const [editedLastName, setEditedLastName] = useState(user.profile?.lastName || '');
   const [editedMedicareId, setEditedMedicareId] = useState(user.profile?.medicareId || '');
-  const handleViewProfile = () => {
-    setCurrentView('profile');
-  };
 
   const handleSaveCondition = async () => {
     if (!newCondition.trim() || !user.profile) return;

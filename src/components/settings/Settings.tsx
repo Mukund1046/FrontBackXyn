@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
 import { useAppStore } from '../../stores/useAppStore';
 import {
   Shield,
   Bell,
-  Palette,
   Download,
   Trash,
 } from 'lucide-react';
 
 export const Settings: React.FC = () => {
-  const { user, ui, showNotification, updateProfile } = useAppStore();
+  const { user, updateProfile } = useAppStore();
 
   const handleExportData = () => {
     const data = {
