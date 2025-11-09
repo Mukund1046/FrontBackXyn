@@ -116,31 +116,31 @@ export const FAQ: React.FC<FAQProps> = ({ searchTerm, onSearchClear, onSearchCha
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Search and Filter */}
-      <Card padding="md">
-        <div className="flex flex-col md:flex-row gap-4">
+      <Card padding="lg">
+        <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search FAQ..."
                 value={searchTerm}
                 onChange={(e) => onSearchChange?.(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
               />
             </div>
           </div>
           
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-2 overflow-x-auto pb-2">
             {categories.map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
                   selectedCategory === category
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-blue-600 text-white shadow-sm'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -152,14 +152,14 @@ export const FAQ: React.FC<FAQProps> = ({ searchTerm, onSearchClear, onSearchCha
       </Card>
 
       {/* FAQ Results */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {filteredFAQs.length > 0 ? (
           <>
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900">
                 Frequently Asked Questions
               </h2>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 font-medium">
                 {filteredFAQs.length} question{filteredFAQs.length !== 1 ? 's' : ''} found
               </span>
             </div>
@@ -168,8 +168,8 @@ export const FAQ: React.FC<FAQProps> = ({ searchTerm, onSearchClear, onSearchCha
               const isExpanded = expandedItems.includes(item.id);
               
               return (
-                <Card key={item.id} padding="md">
-                  <div className="space-y-3">
+                <Card key={item.id} padding="lg" className="hover:shadow-md transition-shadow">
+                  <div className="space-y-4">
                     <div
                       className="flex items-center justify-between cursor-pointer"
                       onClick={() => toggleExpanded(item.id)}
@@ -184,21 +184,21 @@ export const FAQ: React.FC<FAQProps> = ({ searchTerm, onSearchClear, onSearchCha
                       aria-expanded={isExpanded}
                       aria-controls={`faq-answer-${item.id}`}
                     >
-                      <div className="flex items-start gap-3 flex-1">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <HelpCircle className="w-4 h-4 text-blue-600" />
+                      <div className="flex items-start gap-4 flex-1">
+                        <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <HelpCircle className="w-5 h-5 text-blue-600" />
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 mb-1">
+                        <div className="flex-1 space-y-3">
+                          <h3 className="font-semibold text-gray-900 text-base">
                             {item.question}
                           </h3>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full font-medium">
                               {item.category}
                             </span>
-                            <div className="flex gap-1">
+                            <div className="flex gap-2">
                               {item.tags.slice(0, 3).map(tag => (
-                                <span key={tag} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">
+                                <span key={tag} className="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full font-medium">
                                   {tag}
                                 </span>
                               ))}
@@ -209,9 +209,9 @@ export const FAQ: React.FC<FAQProps> = ({ searchTerm, onSearchClear, onSearchCha
                       
                       <div className="flex-shrink-0 ml-4">
                         {isExpanded ? (
-                          <ChevronUp className="w-5 h-5 text-gray-400" />
+                          <ChevronUp className="w-6 h-6 text-gray-400" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-400" />
+                          <ChevronDown className="w-6 h-6 text-gray-400" />
                         )}
                       </div>
                     </div>
@@ -219,9 +219,9 @@ export const FAQ: React.FC<FAQProps> = ({ searchTerm, onSearchClear, onSearchCha
                     {isExpanded && (
                       <div
                         id={`faq-answer-${item.id}`}
-                        className="pl-11 pt-2 border-t border-gray-100"
+                        className="pl-14 pt-4 border-t border-gray-100"
                       >
-                        <p className="text-gray-700 leading-relaxed">
+                        <p className="text-gray-700 leading-relaxed text-base">
                           {item.answer}
                         </p>
                       </div>
@@ -257,23 +257,23 @@ export const FAQ: React.FC<FAQProps> = ({ searchTerm, onSearchClear, onSearchCha
       </div>
 
       {/* Help Section */}
-      <Card padding="md" className="bg-blue-50 border-blue-200">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <HelpCircle className="w-5 h-5 text-blue-600" />
+      <Card padding="lg" className="bg-blue-50 border-blue-200">
+        <div className="flex items-start gap-5">
+          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <HelpCircle className="w-6 h-6 text-blue-600" />
           </div>
-          <div>
-            <h3 className="font-semibold text-blue-900 mb-2">
+          <div className="space-y-4">
+            <h3 className="font-semibold text-blue-900 text-lg">
               Didn't find what you're looking for?
             </h3>
-            <p className="text-blue-800 text-sm mb-3">
+            <p className="text-blue-800 leading-relaxed">
               Our AI assistant can help answer specific questions about Medicare, your health profile, or using Xyn.ai features.
             </p>
-            <div className="flex gap-2">
-              <button className="px-3 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200">
+            <div className="flex gap-3 pt-2">
+              <button className="px-4 py-2.5 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors">
                 Chat with AI Assistant
               </button>
-              <button className="px-3 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200">
+              <button className="px-4 py-2.5 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors">
                 Contact Support
               </button>
             </div>

@@ -36,6 +36,7 @@ export const useGamesStore = create<GamesState & GamesActions>()(
       recordSession: (session: GameSession) => {
         const state = get();
         const today = new Date().toDateString();
+        const previousStreak = state.currentStreak;
         
         set({
           sessions: [...state.sessions, session],
@@ -45,6 +46,21 @@ export const useGamesStore = create<GamesState & GamesActions>()(
         
         // Recalculate streak after recording
         get().calculateStreak();
+        
+        // Trigger notification for streak milestones
+        const newStreak = get().currentStreak;
+        if (newStreak > previousStreak && [3, 7, 14, 30, 60, 100].includes(newStreak)) {
+          // Import notification store dynamically to avoid circular dependency
+          import('./useNotificationStore').then(({ useNotificationStore }) => {
+            useNotificationStore.getState().addNotification({
+              type: 'streak',
+              title: `${newStreak} Day Streak! 🔥`,
+              message: `Amazing! You've played cognitive games for ${newStreak} consecutive days!`,
+              actionLabel: 'Keep Going',
+              actionView: 'cognitive-games',
+            });
+          });
+        }
       },
 
       toggleFavorite: (gameType: string) => {

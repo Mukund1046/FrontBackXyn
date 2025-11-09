@@ -1,15 +1,19 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../stores/useAppStore';
+import { useNotificationStore } from '../../stores/useNotificationStore';
 import { Menu, Bell, Search } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/Tooltip';
 import { useState } from 'react';
 import { useSearch } from '../../hooks/useSearch';
+import { NotificationPanel } from '../notifications/NotificationPanel';
 
 export const TopBar: React.FC = () => {
   const { toggleSidebar, ui, user, setCurrentView } = useAppStore();
+  const { unreadCount } = useNotificationStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const searchResults = useSearch(searchQuery);
 
   const getViewTitle = () => {
@@ -207,15 +211,34 @@ export const TopBar: React.FC = () => {
 
         {/* Notifications */}
         <Tooltip content="View notifications and updates" position="bottom">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="View notifications"
-            aria-expanded="false"
-          >
-            <Bell className="w-5 h-5" aria-hidden="true" />
-          </Button>
+          <div className="relative inline-flex">
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label="View notifications"
+              aria-expanded={notificationPanelOpen}
+              onClick={() => setNotificationPanelOpen(!notificationPanelOpen)}
+              className="relative"
+            >
+              <Bell className="w-5 h-5" aria-hidden="true" />
+            </Button>
+            {unreadCount > 0 && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1.5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md"
+                style={{ pointerEvents: 'none' }}
+              >
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </motion.span>
+            )}
+          </div>
         </Tooltip>
+        
+        <NotificationPanel 
+          isOpen={notificationPanelOpen} 
+          onClose={() => setNotificationPanelOpen(false)} 
+        />
 
         {/* Profile Avatar */}
         <Tooltip content="View your profile and account settings" position="bottom">

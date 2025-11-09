@@ -174,33 +174,18 @@ const DashboardContent: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <div className="space-y-4">
-              <h1 className="text-h1 font-semibold">
-                <span className="block text-h1 font-semibold tracking-tight">Welcome back,</span>
+            <div className="space-y-4 max-w-2xl">
+              <h1 className="text-h1 font-medium text-text-inverse">
+                <span className="block tracking-tighter">Welcome back,</span>
                 <span className="block tracking-tight mt-1">
                   <span>{user.profile?.firstName || 'there'}</span>
                   <span className="ml-1">!</span>
                 </span>
               </h1>
-              <p className="text-lg text-white/90 max-w-xl">
+              <p className="text-body-lg font-regular text-white/90">
                 Your trusted Medicare companion is here to help. Let's find the perfect plan for you.
               </p>
             </div>
-            <motion.div
-              className="hidden md:flex relative z-0"
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{
-                type: 'spring',
-                stiffness: 200,
-                damping: 15,
-                delay: 0.4
-              }}
-            >
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-elevated">
-                <Heart className="h-10 w-10 text-white" fill="currentColor" />
-              </div>
-            </motion.div>
           </motion.div>
           <motion.div
             className="mt-8"
@@ -212,9 +197,11 @@ const DashboardContent: React.FC = () => {
               onClick={handleStartChat}
               variant="secondary"
               size="lg"
-              className="bg-white text-primary-700 font-semibold hover:bg-gray-50 shadow-elevated"
+              className="bg-white hover:bg-gray-50 shadow-elevated"
             >
-              Start a conversation
+              <span className="text-label font-semibold tracking-tight text-primary-700">
+                Start a conversation
+              </span>
             </Button>
           </motion.div>
           </div>
@@ -250,14 +237,14 @@ const DashboardContent: React.FC = () => {
                     </motion.div>
                     <div className="min-w-0 flex-1">
                       <motion.p
-                        className="text-2xl font-bold text-gray-900"
+                        className="text-display-2xl font-semibold tracking-tight text-text-primary font-tabular"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 + index * 0.1 }}
                       >
                         {stat.value}
                       </motion.p>
-                      <p className="text-sm text-gray-600 mt-1 font-medium">{stat.label}</p>
+                      <p className="text-body tracking-tight font-medium text-text-secondary mt-1 truncate">{stat.label}</p>
                     </div>
                   </div>
                 </Card>
@@ -272,7 +259,7 @@ const DashboardContent: React.FC = () => {
             className="lg:col-span-2"
             variants={itemVariants}
           >
-            <h2 className="text-h2 font-semibold text-gray-900 mb-5">Quick Actions</h2>
+            <h2 className="text-h2 font-semibold text-text-primary tracking-tighter mb-5">Quick Actions</h2>
             <div className="grid gap-4" role="list">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
@@ -301,8 +288,8 @@ const DashboardContent: React.FC = () => {
                           <Icon className={`w-7 h-7 ${action.color}`} aria-hidden="true" />
                         </motion.div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-1">{action.title}</h3>
-                          <p className="text-sm text-gray-600">{action.description}</p>
+                          <h3 className="text-h4 font-medium text-text-primary tracking-tight mb-1 truncate">{action.title}</h3>
+                          <p className="text-body-sm text-text-secondary line-clamp-2">{action.description}</p>
                         </div>
                         <motion.div
                           className="text-gray-400 flex-shrink-0 group-hover:text-primary-600 transition-colors"
@@ -326,7 +313,7 @@ const DashboardContent: React.FC = () => {
           <motion.div variants={itemVariants}>
             {recentActivity.length > 0 && (
               <div className="mb-6">
-                <h2 className="text-h2 font-semibold text-gray-900 mb-5">Recent Activity</h2>
+                <h2 className="text-h2 font-semibold text-text-primary tracking-tight mb-5">Recent Activity</h2>
                 <Card padding="md" variant="default">
                   <div className="space-y-3">
                     {recentActivity.map((activity, index) => {
@@ -360,10 +347,10 @@ const DashboardContent: React.FC = () => {
                             <Icon className="w-4 h-4 text-primary-600" />
                           </motion.div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-body-sm font-medium text-text-primary truncate">
                               {activity.title}
                             </p>
-                            <p className="text-xs text-gray-500 mt-0.5">{activity.time}</p>
+                            <p className="text-caption text-text-tertiary mt-0.5">{activity.time}</p>
                           </div>
                         </motion.div>
                       );
@@ -388,11 +375,11 @@ const DashboardContent: React.FC = () => {
                     >
                       <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
                     </motion.div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-amber-900 mb-1">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-h4 font-semibold text-amber-900 tracking-tight mb-1">
                         Complete Your Profile
                       </h3>
-                      <p className="text-sm text-amber-800/80 mb-4">
+                      <p className="text-body-sm text-amber-800/80 mb-4 line-clamp-2">
                         Add more health information to get better AI recommendations.
                       </p>
                       <Button

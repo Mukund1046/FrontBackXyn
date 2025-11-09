@@ -116,6 +116,19 @@ export const useDocumentStore = create<DocumentStore>((set) => ({
         set((state) => ({
           documents: state.documents.map((d) => (d.id === id ? updatedDoc : d)),
         }));
+        
+        // Trigger notification when document is parsed
+        if (updates.isParsed && !doc.isParsed) {
+          import('./useNotificationStore').then(({ useNotificationStore }) => {
+            useNotificationStore.getState().addNotification({
+              type: 'document',
+              title: 'Document Parsed Successfully ✅',
+              message: `${updatedDoc.name} has been analyzed and is ready for chat!`,
+              actionLabel: 'Chat Now',
+              actionView: 'chat',
+            });
+          });
+        }
       }
     };
   },
