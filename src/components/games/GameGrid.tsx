@@ -24,8 +24,8 @@ export const GameGrid: React.FC<Props> = ({ category, games }) => {
       <div className="flex items-center gap-3">
         <span className="text-3xl">{emoji}</span>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">{category}</h2>
-          <p className="text-sm text-gray-600">{games.length} {games.length === 1 ? 'activity' : 'activities'}</p>
+          <h2 className="text-2xl tracking-[-0.3px] font-bold text-gray-900">{category}</h2>
+          <p className="text-sm tracking-[-0.3px] text-gray-600">{games.length} {games.length === 1 ? 'activity' : 'activities'}</p>
         </div>
       </div>
       

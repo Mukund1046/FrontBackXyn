@@ -24,7 +24,7 @@ function makeIcon(file: string): LucideIcon {
   const C = byFile.get(file);
   const Icon: LucideIcon = ({ size = 24, color = 'currentColor', className, style, ...rest }) => {
     if (!C) {
-      return <span className={className} style={{ width: size, height: size, display: 'inline-block', flexShrink: 0, ...style }} aria-hidden />;
+      return <span className={className} style={{ width: size, height: size, display: 'inline-block', flexShrink: 0, ...style }} aria-hidden/>;
     }
     return (
       <C 

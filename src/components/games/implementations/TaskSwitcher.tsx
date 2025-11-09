@@ -16,6 +16,7 @@ export const TaskSwitcher: React.FC = () => {
   const [shape, setShape] = useState<Shape>('circle');
   const [color, setColor] = useState<Color>('red');
   const [number, setNumber] = useState<GameNumber>(1);
+  const [rule, setRule] = useState<'color' | 'number'>('color');
   const [score, setScore] = useState(0);
   const [round, setRound] = useState(0);
   const [startTime] = useState(Date.now());

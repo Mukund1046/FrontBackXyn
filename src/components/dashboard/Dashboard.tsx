@@ -1,20 +1,25 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { SkeletonCard, SkeletonText } from '../ui/LoadingSpinner';
 import { useAppStore } from '../../stores/useAppStore';
+import { useDocumentStore } from '../../stores/useDocumentStore';
+import { useGamesStore } from '../../stores/useGamesStore';
 import { FeatureErrorBoundary } from '../error/FeatureErrorBoundary';
 import {
   MessageSquare,
   User,
   Shield,
   Heart,
-  AlertCircle,
+  FileText,
+  Brain,
 } from 'lucide-react';
 
 const DashboardContent: React.FC = () => {
   const { user, setCurrentView, chat } = useAppStore();
+  const { documents } = useDocumentStore();
+  const { getRecentSessions } = useGamesStore();
   const isLoading = !user?.profile;
 
   const handleStartChat = () => {
@@ -83,15 +88,76 @@ const DashboardContent: React.FC = () => {
     },
   ];
 
-  const recentActivity = chat.messages
-    .filter((msg) => msg.type === 'user')
-    .slice(-3)
-    .map((msg) => ({
-      type: 'chat',
-      title: `You: "${msg.content.substring(0, 30)}..."`,
-      time: new Date(msg.timestamp).toLocaleTimeString(),
-      icon: MessageSquare,
+  // Aggregate recent activity from multiple sources
+  const recentActivity = useMemo(() => {
+    const activities: Array<{
+      type: 'chat' | 'game' | 'document' | 'profile';
+      title: string;
+      time: string;
+      timestamp: number;
+      icon: React.ComponentType<{ className?: string }>;
+      action: () => void;
+    }> = [];
+
+    // Recent chat messages
+    const chatActivities = chat.messages
+      .filter((msg) => msg.type === 'user')
+      .slice(-2)
+      .map((msg) => ({
+        type: 'chat' as const,
+        title: `Chat: "${msg.content.substring(0, 35)}..."`,
+        time: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: msg.timestamp,
+        icon: MessageSquare,
+        action: () => setCurrentView('chat'),
+      }));
+
+    // Recent games played
+    const recentGames = getRecentSessions(2);
+    const gameActivities = recentGames.map((session) => ({
+      type: 'game' as const,
+      title: `Played ${session.gameType.replace('-', ' ')} - Score: ${session.score}`,
+      time: new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: session.timestamp,
+      icon: Brain,
+      action: () => setCurrentView('cognitive-games'),
     }));
+
+    // Recently parsed documents
+    const recentDocs = documents
+      .filter((doc) => doc.isParsed && doc.parsedAt)
+      .sort((a, b) => (b.parsedAt?.getTime() || 0) - (a.parsedAt?.getTime() || 0))
+      .slice(0, 2)
+      .map((doc) => ({
+        type: 'document' as const,
+        title: `Document parsed: ${doc.name.substring(0, 30)}${doc.name.length > 30 ? '...' : ''}`,
+        time: doc.parsedAt ? new Date(doc.parsedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
+        timestamp: doc.parsedAt?.getTime() || Date.now(),
+        icon: FileText,
+        action: () => setCurrentView('documents'),
+      }));
+
+    // Profile updates (if completeness increased recently)
+    const profileCompleteness = user.profile?.profileCompleteness || 0;
+    if (profileCompleteness > 0 && profileCompleteness < 100) {
+      activities.push({
+        type: 'profile',
+        title: `Profile ${profileCompleteness}% complete`,
+        time: 'Recently',
+        timestamp: Date.now(),
+        icon: User,
+        action: () => setCurrentView('profile'),
+      });
+    }
+
+    // Combine all activities
+    activities.push(...chatActivities, ...gameActivities, ...recentDocs);
+
+    // Sort by timestamp (most recent first) and limit to 5 items
+    return activities
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 5);
+  }, [chat.messages, documents, getRecentSessions, user.profile?.profileCompleteness, setCurrentView]);
 
   if (isLoading) {
     return (
@@ -199,7 +265,7 @@ const DashboardContent: React.FC = () => {
               size="lg"
               className="bg-white hover:bg-gray-50 shadow-elevated"
             >
-              <span className="text-label font-semibold tracking-tight text-primary-700">
+              <span className="text-body font-semibold tracking-tight text-primary-700">
                 Start a conversation
               </span>
             </Button>
@@ -237,7 +303,7 @@ const DashboardContent: React.FC = () => {
                     </motion.div>
                     <div className="min-w-0 flex-1">
                       <motion.p
-                        className="text-display-2xl font-semibold tracking-tight text-text-primary font-tabular"
+                        className="text-h4 font-semibold tracking-tighter text-text-primary font-tabular"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 + index * 0.1 }}
@@ -320,18 +386,18 @@ const DashboardContent: React.FC = () => {
                       const Icon = activity.icon;
                       return (
                         <motion.div
-                          key={index}
+                          key={`${activity.type}-${index}`}
                           className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 p-3 rounded-xl transition-colors duration-200 focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 group"
-                          onClick={() => setCurrentView('chat')}
+                          onClick={activity.action}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
-                              setCurrentView('chat');
+                              activity.action();
                             }
                           }}
                           tabIndex={0}
                           role="button"
-                          aria-label={`View chat: ${activity.title}`}
+                          aria-label={`View ${activity.type}: ${activity.title}`}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.6 + index * 0.1 }}
@@ -360,41 +426,7 @@ const DashboardContent: React.FC = () => {
               </div>
             )}
 
-            {/* Profile Completion Reminder */}
-            {(user.profile?.profileCompleteness || 0) < 100 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.7 }}
-              >
-                <Card padding="md" variant="subtle" className="border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50/50">
-                  <div className="flex items-start gap-4">
-                    <motion.div
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                    >
-                      <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
-                    </motion.div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-h4 font-semibold text-amber-900 tracking-tight mb-1">
-                        Complete Your Profile
-                      </h3>
-                      <p className="text-body-sm text-amber-800/80 mb-4 line-clamp-2">
-                        Add more health information to get better AI recommendations.
-                      </p>
-                      <Button
-                        size="sm"
-                        onClick={handleViewProfile}
-                        variant="primary"
-                        className="bg-amber-600 hover:bg-amber-700"
-                      >
-                        Continue Setup
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            )}
+
           </motion.div>
           </div>
       </motion.div>

@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNotificationStore } from '../../stores/useNotificationStore';
-import { useDocumentStore } from '../../stores/useDocumentStore';
 import { useGamesStore } from '../../stores/useGamesStore';
 import { useAppStore } from '../../stores/useAppStore';
 
@@ -26,21 +25,24 @@ export const NotificationManager: React.FC = () => {
     }
   }, [user.profile, addNotification]);
 
-  // Check profile completeness
+  // Check profile completeness - show toast on login
   useEffect(() => {
-    if (user.profile && user.profile.profileCompleteness < 60) {
-      const hasShownProfileNotif = sessionStorage.getItem('profile-notif-shown');
-      if (!hasShownProfileNotif) {
+    if (user.profile && user.profile.profileCompleteness < 100) {
+      const lastProfileToast = localStorage.getItem('last-profile-toast');
+      const today = new Date().toDateString();
+      
+      // Show occasionally: once per day
+      if (lastProfileToast !== today) {
         setTimeout(() => {
           addNotification({
             type: 'profile',
-            title: 'Complete Your Profile',
-            message: `Your profile is ${user.profile.profileCompleteness}% complete. Add more details for personalized recommendations!`,
-            actionLabel: 'Update Profile',
+            title: 'Complete Your Profile 📋',
+            message: `Your profile is ${user.profile.profileCompleteness}% complete. Add more health information for better AI recommendations!`,
+            actionLabel: 'Complete Now',
             actionView: 'profile',
           });
-          sessionStorage.setItem('profile-notif-shown', 'true');
-        }, 5000);
+          localStorage.setItem('last-profile-toast', today);
+        }, 8000); // Show 8 seconds after login
       }
     }
   }, [user.profile, addNotification]);

@@ -5,7 +5,7 @@ import { RefreshCw, MessageSquare, Home, User, HelpCircle } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
-  feature: 'chat' | 'dashboard' | 'profile' | 'help-support';
+  feature: 'chat' | 'dashboard' | 'profile' | 'help-support' | 'cognitive-games';
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
   navigate?: () => void;
 }
@@ -39,6 +39,12 @@ const featureConfig = {
     title: 'Help & Support Error',
     description: 'There was a problem loading the help center.',
     fallbackMessage: 'The help center is temporarily unavailable.',
+  },
+  'cognitive-games': {
+    icon: MessageSquare,
+    title: 'Cognitive Games Error',
+    description: 'There was a problem loading the cognitive games.',
+    fallbackMessage: 'The games are temporarily unavailable.',
   },
 };
 

@@ -95,7 +95,7 @@ export const Sidebar: React.FC = () => {
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header */}
           <motion.div
-            className="flex items-center justify-between p-5 border-b border-gray-200/80 font-sans min-h-[73px]"
+            className="flex items-center justify-between p-5 border-b border-gray-200/80 font-sans tracking-[-0.4px] min-h-[73px]"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
@@ -178,7 +178,7 @@ export const Sidebar: React.FC = () => {
                     <User className="w-5 h-5 text-primary-700" />
                   </motion.div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">
+                    <p className="text-sm font-semibold tracking-[-0.4px] text-gray-900 truncate">
                       {user.profile?.firstName} {user.profile?.lastName}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">
@@ -244,7 +244,7 @@ export const Sidebar: React.FC = () => {
                         exit={{ opacity: 0, width: 0 }}
                         transition={{ duration: 0.2 }}
                         className={cn(
-                          "text-sm font-medium tracking-[-0.2px] transition-colors whitespace-nowrap overflow-hidden",
+                          "text-sm font-medium tracking-[-0.4px] transition-colors whitespace-nowrap overflow-hidden",
                           isActive ? "text-primary-700 font-semibold" : "text-gray-700"
                         )}
                       >
@@ -304,7 +304,7 @@ export const Sidebar: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                 >
                   <LogOut className="w-5 h-5 text-gray-500" aria-hidden="true" />
-                  <span className="text-sm font-medium tracking-[-0.2px]">Sign out</span>
+                  <span className="text-sm font-medium tracking-[-0.4px]">Sign out</span>
                 </motion.button>
               </motion.div>
             )}

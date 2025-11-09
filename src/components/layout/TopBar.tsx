@@ -66,7 +66,7 @@ export const TopBar: React.FC = () => {
 
   return (
     <motion.header
-      className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 h-16 flex items-center justify-between px-4 lg:px-6 font-sans sticky top-0 z-50 shadow-subtle"
+      className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 h-16 flex items-center justify-between px-4 lg:px-6 font-sans tracking-[-0.4px] sticky top-0 z-50 shadow-subtle"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
@@ -92,7 +92,7 @@ export const TopBar: React.FC = () => {
 
         <div className="flex items-center gap-4 min-w-0">
           <motion.h1
-            className="text-h4 font-semibold text-gray-900 truncate"
+            className="text-h4 font-semibold tracking-[-0.4px] text-gray-900 truncate"
             key={ui.currentView}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -120,7 +120,7 @@ export const TopBar: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search application"
               aria-autocomplete="list"
-              aria-expanded={searchQuery && searchResults.length > 0}
+              aria-expanded={!!(searchQuery && searchResults.length > 0)}
               aria-controls="search-results"
             />
             <AnimatePresence>
@@ -165,14 +165,9 @@ export const TopBar: React.FC = () => {
                       whileHover={{ x: 4 }}
                     >
                       <div className="flex items-start gap-3">
-                        {result.icon && (
-                          <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">
-                            {result.icon}
-                          </span>
-                        )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-900 text-sm truncate group-hover:text-primary-700 transition-colors">
+                            <p className="font-semibold tracking-[-0.4px] text-gray-900 text-sm truncate group-hover:text-primary-700 transition-colors">
                               {result.title}
                             </p>
                             {result.category && (

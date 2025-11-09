@@ -44,7 +44,7 @@ export const GameCard: React.FC<Props> = ({ game }) => {
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1">
-            <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-primary-700 transition-colors">
+            <h3 className="text-lg font-semibold tracking-[-0.3px] text-gray-900 mb-1 group-hover:text-primary-700 transition-colors">
               {game.title}
             </h3>
             <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${difficulty.color}`}>
@@ -71,7 +71,7 @@ export const GameCard: React.FC<Props> = ({ game }) => {
         </div>
         
         {/* Description */}
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-sm text-gray-600 mb-4 line-clamp-2 tracking-[-0.3px]">
           {game.description}
         </p>
         

@@ -4,11 +4,12 @@
  */
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Heart, Star, CheckCircle } from '../icons/lucide-adapter';
+import { Brain, Heart, Star, CheckCircle, TrendingUp, Grid } from '../icons/lucide-adapter';
 import { gamesApi } from '../lib/games-api';
 import { GameCategory } from '../types/games';
 import { GameGrid } from '../components/games/GameGrid';
 import { StatsCard } from '../components/games/StatsCard';
+import { GamesAnalytics } from '../components/games/GamesAnalytics';
 import { useGamesStore } from '../stores/useGamesStore';
 import { FeatureErrorBoundary } from '../components/error/FeatureErrorBoundary';
 
@@ -16,6 +17,7 @@ const CognitiveGamesContent: React.FC = () => {
   const [games, setGames] = useState<GameCategory>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'games' | 'analytics'>('games');
   const { getStats } = useGamesStore();
   const stats = getStats();
 
@@ -44,7 +46,7 @@ const CognitiveGamesContent: React.FC = () => {
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full mx-auto"
           />
-          <p className="text-gray-600">Loading cognitive games...</p>
+          <p className="text-gray-600 tracking-[-0.3px]">Loading cognitive games...</p>
         </div>
       </div>
     );
@@ -72,6 +74,27 @@ const CognitiveGamesContent: React.FC = () => {
 
   const totalGames = Object.values(games).reduce((sum, categoryGames) => sum + categoryGames.length, 0);
 
+  // Show analytics if in analytics mode
+  if (viewMode === 'analytics') {
+    return (
+      <div className="relative">
+        {/* Toggle Button */}
+        <div className="absolute top-6 right-6 z-10">
+          <motion.button
+            onClick={() => setViewMode('games')}
+            className="flex items-center gap-2 px-4 py-2 bg-white shadow-lg rounded-full border border-gray-200 hover:shadow-xl transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Grid className="w-5 h-5 text-primary-600" />
+            <span className="text-label font-semibold text-text-primary">View Games</span>
+          </motion.button>
+        </div>
+        <GamesAnalytics />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto">
       {/* Header */}
@@ -81,14 +104,27 @@ const CognitiveGamesContent: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="space-y-3"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
-            <Brain className="w-7 h-7 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <Brain className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold tracking-[-0.6px] text-gray-900">Cognitive Therapy Games</h1>
+              <p className="text-gray-600 tracking-[-0.3px]">Evidence-based activities to support mental wellness</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Cognitive Therapy Games</h1>
-            <p className="text-gray-600">Evidence-based activities to support mental wellness</p>
-          </div>
+          
+          {/* Toggle Button */}
+          <motion.button
+            onClick={() => setViewMode('analytics')}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg rounded-full hover:shadow-xl transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <TrendingUp className="w-5 h-5" />
+            <span className="text-label font-semibold">View Analytics</span>
+          </motion.button>
         </div>
       </motion.div>
 

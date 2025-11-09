@@ -13,6 +13,39 @@ const SOUNDS = [
 
 type SoundId = typeof SOUNDS[number]['id'];
 
+// Audio context for generating sounds
+const audioContext = typeof window !== 'undefined' 
+  ? new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)() 
+  : null;
+
+// Generate musical tones for each sound
+const playTone = (frequency: number, duration: number = 0.3) => {
+  if (!audioContext) return;
+  
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.frequency.value = frequency;
+  oscillator.type = 'sine';
+  
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+  
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + duration);
+};
+
+// Sound frequencies mapped to each sound button
+const SOUND_FREQUENCIES: Record<SoundId, number> = {
+  sound1: 523.25, // C5 - Chime
+  sound2: 659.25, // E5 - Bell
+  sound3: 783.99, // G5 - Drum
+  sound4: 1046.50, // C6 - Gong
+};
+
 export const EchoGrove: React.FC = () => {
   const [sequence, setSequence] = useState<SoundId[]>([]);
   const [userSequence, setUserSequence] = useState<SoundId[]>([]);
@@ -46,6 +79,8 @@ export const EchoGrove: React.FC = () => {
     
     for (const soundId of seq) {
       setActiveSound(soundId);
+      // Play the corresponding tone
+      playTone(SOUND_FREQUENCIES[soundId], 0.4);
       await new Promise(resolve => setTimeout(resolve, 600));
       setActiveSound(null);
       await new Promise(resolve => setTimeout(resolve, 200));
@@ -61,6 +96,9 @@ export const EchoGrove: React.FC = () => {
     const newUserSeq = [...userSequence, soundId];
     setUserSequence(newUserSeq);
 
+    // Play sound feedback when user clicks
+    playTone(SOUND_FREQUENCIES[soundId], 0.3);
+    
     setActiveSound(soundId);
     setTimeout(() => setActiveSound(null), 200);
 
