@@ -1,14 +1,11 @@
 import React from 'react';
-import { useAppStore } from '../../stores/useAppStore';
-import { OnboardingFlow } from '../onboarding/OnboardingFlow';
 import { Login } from './Login';
 
+/**
+ * Auth Component
+ * Simple wrapper that shows the login page
+ * Google OAuth handles all authentication flows
+ */
 export const Auth: React.FC = () => {
-  const { user } = useAppStore();
-
-  if (user.onboardingComplete) {
-    return <Login />;
-  }
-
-  return <OnboardingFlow />;
+  return <Login />;
 };

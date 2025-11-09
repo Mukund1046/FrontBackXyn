@@ -126,5 +126,16 @@ export const Meh = makeIcon('face-grin');
 export const Laugh = makeIcon('face-grin');
 export const Flower2 = makeIcon('feather');
 export const Sparkles = makeIcon('sparkle');
+export const Activity = makeIcon('chart-bar');
+export const Mic = makeIcon('signal');
+export const Paintbrush = makeIcon('pen');
+export const Pen = makeIcon('pen');
+export const Hand = makeIcon('thumbs-up');
+export const RotateCcw = makeIcon('loader');
+export const Image = makeIcon('image');
+export const Loader = makeIcon('loader');
+export const Play = makeIcon('play');
+export const Pause = makeIcon('stop');
+export const StopCircle = makeIcon('circle-delete');
 
 export type { LucideProps as IconProps, LucideIcon as IconType };

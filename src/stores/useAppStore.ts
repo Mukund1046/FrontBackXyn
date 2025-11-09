@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AppState, UserProfile, ChatMessage, ChatSession, OnboardingStep, Notification } from '../types';
+import type { AppState, UserProfile, ChatMessage, ChatSession, Notification } from '../types';
 import { generateId } from '../lib/utils';
+import { signOut } from '../lib/supabase';
 
 interface AppStore extends AppState {
   // User actions
   setUser: (profile: UserProfile) => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
   logout: () => void;
-  completeOnboarding: () => void;
   
   // Chat actions (legacy - backward compatibility)
   addMessage: (message: ChatMessage) => void;
@@ -32,57 +32,7 @@ interface AppStore extends AppState {
   setTheme: (theme: 'light' | 'dark') => void;
   showNotification: (notification: Omit<Notification, 'id'>) => void;
   hideNotification: () => void;
-  
-  // Onboarding
-  onboardingSteps: OnboardingStep[];
-  currentStep: number;
-  setCurrentStep: (step: number) => void;
-  completeStep: (stepId: string) => void;
-  
 }
-
-const initialOnboardingSteps: OnboardingStep[] = [
-  {
-    id: 'welcome',
-    title: 'Welcome to Xyn.ai',
-    description: 'Your personal Medicare health assistant',
-    component: 'Welcome',
-    completed: false,
-    required: true,
-  },
-  {
-    id: 'account',
-    title: 'Create Account',
-    description: 'Set up your secure account',
-    component: 'AccountSetup',
-    completed: false,
-    required: true,
-  },
-  {
-    id: 'health-assessment',
-    title: 'Health Assessment',
-    description: 'Tell us about your health needs',
-    component: 'HealthAssessment',
-    completed: false,
-    required: true,
-  },
-  {
-    id: 'api-setup',
-    title: 'AI Assistant Setup',
-    description: 'Configure your AI assistant',
-    component: 'ApiSetup',
-    completed: false,
-    required: true,
-  },
-  {
-    id: 'complete',
-    title: 'Get Started',
-    description: 'You\'re all set to use Xyn.ai',
-    component: 'Complete',
-    completed: false,
-    required: true,
-  },
-];
 
 export const useAppStore = create<AppStore>()(
   persist(
@@ -91,7 +41,6 @@ export const useAppStore = create<AppStore>()(
       user: {
         profile: null,
         isAuthenticated: false,
-        onboardingComplete: false,
       },
       chat: {
         sessions: [],
@@ -114,8 +63,6 @@ export const useAppStore = create<AppStore>()(
         currentView: 'dashboard',
         notification: null,
       },
-      onboardingSteps: initialOnboardingSteps,
-      currentStep: 0,
 
       // User actions
       setUser: (profile) =>
@@ -143,12 +90,15 @@ export const useAppStore = create<AppStore>()(
           },
         })),
 
-      logout: () =>
+      logout: async () => {
+        // Sign out from Supabase
+        await signOut();
+        
+        // Clear local state
         set(() => ({
           user: {
             profile: null,
             isAuthenticated: false,
-            onboardingComplete: false,
           },
           chat: {
             sessions: [],
@@ -166,14 +116,8 @@ export const useAppStore = create<AppStore>()(
             currentView: 'dashboard',
             notification: null,
           },
-          onboardingSteps: initialOnboardingSteps,
-          currentStep: 0,
-        })),
-
-      completeOnboarding: () =>
-        set((state) => ({
-          user: { ...state.user, onboardingComplete: true },
-        })),
+        }));
+      },
 
       // Chat actions
       addMessage: (message) =>
@@ -408,18 +352,6 @@ export const useAppStore = create<AppStore>()(
         set((state) => ({
           ui: { ...state.ui, notification: null },
         })),
-
-      // Onboarding actions
-      setCurrentStep: (step) => set({ currentStep: step }),
-
-      completeStep: (stepId) =>
-        set((state) => ({
-          onboardingSteps: state.onboardingSteps.map((step) =>
-            step.id === stepId ? { ...step, completed: true } : step
-          ),
-        })),
-
-
     }),
     {
       name: 'xynai-storage',
@@ -459,8 +391,6 @@ export const useAppStore = create<AppStore>()(
         ui: {
           theme: state.ui.theme,
         },
-        onboardingSteps: state.onboardingSteps,
-        currentStep: state.currentStep,
       }),
     }
   )

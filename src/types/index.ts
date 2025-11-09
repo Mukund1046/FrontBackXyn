@@ -74,7 +74,6 @@ export interface AppState {
   user: {
     profile: UserProfile | null;
     isAuthenticated: boolean;
-    onboardingComplete: boolean;
   };
   chat: ChatState;
   medicare: {
@@ -90,14 +89,6 @@ export interface AppState {
     notification: Notification | null;
   };
 }
-
-export interface OnboardingStep {
-  id: string;
-  title: string;
-  description: string;
-  component: string;
-  completed: boolean;
-  required: boolean;
 }
 
 export interface HealthAssessment {

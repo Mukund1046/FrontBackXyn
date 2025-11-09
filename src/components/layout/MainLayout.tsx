@@ -13,6 +13,7 @@ import { Notification } from '../ui/Notification';
 import { DocumentManager } from '../documents/DocumentManager';
 import { CognitiveGames } from '../../pages/CognitiveGames';
 import { GamePlayer } from '../games/GamePlayer';
+import { ParkinsonDetection } from '../../pages/ParkinsonDetection';
 
 export const MainLayout: React.FC = () => {
   const { ui } = useAppStore();
@@ -33,6 +34,8 @@ export const MainLayout: React.FC = () => {
         return <ChatInterface />;
       case 'cognitive-games':
         return <CognitiveGames />;
+      case 'parkinsons':
+        return <ParkinsonDetection />;
       case 'profile':
         return <Profile />;
       case 'settings':
